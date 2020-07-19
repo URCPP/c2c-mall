@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.diandian.dubbo.product.mapper.OrderDetailTransportMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.order.OrderDetailTransportModel">
+        <id column="id" property="id" />
+        <result column="order_detail_id" property="orderDetailId" />
+        <result column="product_num" property="productNum" />
+        <result column="transport_no" property="transportNo" />
+        <result column="transport_code" property="transportCode" />
+        <result column="transport_status" property="transportStatus" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <resultMap id="dtoResultMap" type="com.diandian.dubbo.facade.dto.order.OrderDetailTransportDTO">
+        <result column="transport_no" property="transportNo"/>
+        <result column="transport_code" property="transportCode"/>
+        <collection property="expressList" ofType="com.diandian.dubbo.facade.model.order.OrderExpressInfoModel">
+                <result column="transport_no" property="transportNo"/>
+                <result column="transport_code" property="transportCode"/>
+                <result column="state" property="state"/>
+                <result column="context" property="context"/>
+                <result column="time" property="time"/>
+                <result column="ftime" property="ftime"/>
+                <result column="status" property="status"/>
+                <result column="area_code" property="areaCode"/>
+                <result column="area_name" property="areaName"/>
+        </collection>
+    </resultMap>
+
+    <select id="getByNoAndCode" resultMap="BaseResultMap">
+        SELECT * FROM order_detail_transport
+        WHERE transport_no = #{transportNo, jdbcType=VARCHAR}
+        <if test="transportCode != null and transportCode != ''">
+            AND transport_code = #{transportCode, jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <select id="getOrderTransportList" parameterType="java.lang.Long" resultMap="dtoResultMap">
+        SELECT
+        transport_no,
+        transport_code
+        FROM order_detail_transport
+        WHERE order_detail_id = #{orderDetailId, jdbcType=BIGINT}
+    </select>
+</mapper>

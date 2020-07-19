@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantInfoMapper">
+
+    <resultMap id="IntactTreeItemVOMap" type="com.diandian.dubbo.facade.vo.IntactTreeVO">
+        <result property="id" column="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="name" column="name"/>
+        <result property="type" column="type"/>
+    </resultMap>
+
+
+    <resultMap id="merchantListVOMap" type="com.diandian.dubbo.facade.vo.merchant.MerchantInfoListVO">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="softTypeName" column="soft_type_name"/>
+        <result property="softTypeId" column="soft_type_id"/>
+        <result property="leader" column="leader"/>
+        <result property="phone" column="phone"/>
+        <result property="loginName" column="login_name"/>
+        <result property="approveFlag" column="approve_flag"/>
+        <result property="disabledFlag" column="disabled_flag"/>
+        <result property="createTime" column="create_time"/>
+        <result property="parentName" column="org_name"/>
+        <result property="merchantExpireTime" column="merchant_expire_time"/>
+    </resultMap>
+
+<!--    <resultMap id="merchantTeanAppMap" type="com.diandian.dubbo.facade.vo.merchant.MerchantTeamAppVo">-->
+<!--        <result property="level" column="level"/>-->
+<!--        <result property="name" column="name"/>-->
+<!--        <result property="conutDirectTean" column="conutDirectTean"/>-->
+<!--        <result property="conutDirectTean" column="conutDirectTean"/>-->
+<!--        <result property="avatar" column="avatar"/>-->
+<!--        <result property="phone" column="phone"/>-->
+<!--    </resultMap>-->
+
+    <resultMap id="merchantDetailVOMap" type="com.diandian.dubbo.facade.vo.merchant.MerchantInfoDetailVO">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="softTypeId" column="soft_type_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="leader" column="leader"/>
+        <result property="phone" column="phone"/>
+        <result property="loginName" column="login_name"/>
+        <result property="idcard" column="idcard"/>
+        <result property="openBank" column="open_bank"/>
+        <result property="openBranchBank" column="open_branch_bank"/>
+        <result property="bankCardNo" column="bank_card_no"/>
+        <result property="bankCardPic" column="bank_card_pic"/>
+        <result property="accountName" column="account_name"/>
+        <result property="provinceCode" column="province_code"/>
+        <result property="cityCode" column="city_code"/>
+        <result property="areaCode" column="area_code"/>
+        <result property="address" column="address"/>
+        <result property="idcardReversePic" column="idcard_reverse_pic"/>
+        <result property="idcardPositivePic" column="idcard_positive_pic"/>
+        <result property="businessLicensePic" column="business_license_pic"/>
+        <result property="businessLicenseCode" column="business_license_code"/>
+        <result property="oneCategoryId" column="one_category_id"/>
+        <result property="oneCategory" column="one_category"/>
+        <result property="twoCategoryId" column="two_category_id"/>
+        <result property="twoCategory" column="two_category"/>
+        <result property="diningStartTime" column="dining_start_time"/>
+        <result property="diningEndTime" column="dining_end_time"/>
+        <result property="consume" column="consume"/>
+        <result property="approveFlag" column="approve_flag"/>
+        <result property="merchantExpireTime" column="merchant_expire_time"/>
+        <result property="disabledFlag" column="disabled_flag"/>
+        <result property="recommendId" column="recommend_id"/>
+        <result property="recommendType" column="recommend_type_flag"/>
+        <result property="powerAttorneyPic" column="power_attorney_pic"/>
+        <result property="infoIsPersonal" column="info_is_personal"/>
+        <result property="level" column="level"/>
+    </resultMap>
+    <select id="queryMerchantListVO" parameterType="java.util.Map" resultMap="merchantListVOMap">
+        SELECT
+        a.id,
+        a.code,
+        a.name,
+        a.parent_id,
+        a.leader,
+        a.phone,
+        a.login_name,
+        a.approve_flag,
+        a.disabled_flag,
+        a.soft_type_id,
+        a.soft_type_name,
+        a.create_time,
+        a.merchant_expire_time,
+        a.mall_open_flag,
+        c.org_name
+        FROM merchant_info a LEFT JOIN sys_org c ON a.parent_id = c.id
+        LEFT JOIN merchant_open_apply_log d ON a.id = d.merchant_id
+        WHERE 1 = 1 AND a.del_flag = 0
+        <if test="params.leader != null and params.leader != ''">
+            AND a.leader like concat('%',#{params.leader},'%')
+        </if>
+        <if test="params.name != null and params.name != ''">
+            AND a.name like concat('%',#{params.name},'%')
+        </if>
+        <if test="params.phone != null and params.phone != ''">
+            AND a.phone like concat('%',#{params.phone},'%')
+        </if>
+        <if test="params.loginName != null and params.loginName != ''">
+            AND a.login_name like concat('%',#{params.loginName},'%')
+        </if>
+        <if test="params.softTypeId != null and params.softTypeId != '' and params.softTypeId != 0">
+            AND a.soft_type_id = #{params.softTypeId}
+        </if>
+        <if test="params.parentId != null and params.parentId != '' and params.parentId != 0">
+            AND a.tree_str LIKE CONCAT('%', #{params.parentId}, '%')
+        </if>
+        <if test="params.approveFlag != null and params.approveFlag != '' and params.approveFlag != 4">
+            AND a.approve_flag = #{params.approveFlag}
+        </if>
+        <if test="params.disabledFlag != null and params.disabledFlag != ''">
+            AND a.disabled_flag = #{params.disabledFlag}
+        </if>
+        <if test="params.approveFlag != null and params.approveFlag != '' and params.approveFlag == 4">
+            AND now() > a.merchant_expire_time
+        </if>
+        <if test="params.startTime != null and params.startTime != ''">
+            AND a.create_time >= #{params.startTime}
+        </if>
+        <if test="params.endTime != null and params.endTime != ''">
+            AND #{params.endTime} >= a.create_time
+        </if>
+        AND (d.apply_state_flag = 1 OR d.apply_state_flag IS NULL)
+        ORDER BY a.id DESC
+    </select>
+
+    <select id="getIntactTreeMerchantPart" parameterType="java.util.Map" resultMap="IntactTreeItemVOMap">
+        SELECT id, name, parent_id, 1 AS type FROM merchant_info
+        WHERE 1 = 1 AND del_flag = 0 AND disabled_flag = 0 AND approve_flag = 2
+        <if test="params.parentId != null and params.parentId != '' and params.parentId != 0">
+            AND tree_str LIKE CONCAT('%', #{params.parentId}, '%')
+        </if>
+    </select>
+
+    <select id="getMerchantDetailVO" parameterType="java.lang.Long" resultMap="merchantDetailVOMap">
+        SELECT
+        a.id,
+        a.name,
+        a.parent_id,
+        a.soft_type_id,
+        a.code,
+        a.province_code,
+        a.city_code,
+        a.area_code,
+        a.address,
+        a.leader,
+        a.phone,
+        a.login_name,
+        a.idcard,
+        a.idcard_positive_pic,
+        a.idcard_reverse_pic,
+        a.business_license_pic,
+        a.business_license_code,
+        a.open_bank,
+        a.open_branch_bank,
+        a.bank_card_no,
+        a.bank_card_pic,
+        a.account_name,
+        a.one_category_id,
+        a.one_category,
+        a.two_category_id,
+        a.two_category,
+        a.dining_start_time,
+        a.dining_end_time,
+        a.consume,
+        a.approve_flag,
+        a.disabled_flag,
+        a.merchant_expire_time,
+        a.recommend_id,
+        a.recommend_type_flag,
+        a.info_is_personal,
+        a.power_attorney_pic,
+        a.level
+        FROM merchant_info a
+        WHERE a.id = #{id, jdbcType=BIGINT}
+    </select>
+    <select id="queryMerchantIdList" parameterType="com.diandian.dubbo.facade.dto.merchant.MerchantInfoQueryDTO" resultType="java.lang.Long">
+        SELECT id FROM merchant_info
+        WHERE 1 = 1
+        <if test="dto.treeStr != null and dto.treeStr != ''">
+            AND tree_str LIKE CONCAT('%', #{dto.treeStr}, '%')
+        </if>
+    </select>
+
+    <select id="getNameById" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT name FROM merchant_info WHERE id = #{id, jdbcType=BIGINT}
+    </select>
+
+    <select id="getByUsername" parameterType="java.lang.String" resultType="com.diandian.dubbo.facade.model.member.MerchantInfoModel">
+        select *
+        FROM merchant_info WHERE del_flag = 0 and BINARY login_name = #{username}
+    </select>
+
+    <select id="getExportMchList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+        a.code mchCode,
+        a.name mchName,
+        b.org_name parentOrgName,
+        c.name recommendMchName,
+        d.type_name softTypeName,
+        a.leader,
+        a.phone,
+        a.idcard,
+        a.business_license_code businessLicenseCode,
+        a.open_bank openBank,
+        a.open_branch_bank openBranchBank,
+        a.bank_card_no bankCardNo,
+        a.account_name accountName,
+        a.province_name provinceName,
+        a.city_name cityName,
+        a.area_name areaName,
+        a.address,
+        a.create_time createTime
+        FROM merchant_info a LEFT JOIN sys_org b ON a.parent_id = b.id LEFT JOIN merchant_info c ON a.recommend_id = c.id
+        LEFT JOIN biz_software_type d ON a.soft_type_id = d.id
+        LEFT JOIN merchant_open_apply_log e ON a.id = e.merchant_id
+        WHERE a.del_flag = 0
+        <if test="params.approveFlag != null">
+            AND a.approve_flag = #{params.approveFlag}
+        </if>
+        <if test="params.softTypeId != null and params.softTypeId != '' and params.softTypeId != 0">
+            AND a.soft_type_id = #{params.softTypeId}
+        </if>
+        <if test="params.startTime != null and params.startTime != ''">
+            AND a.create_time >= #{params.startTime}
+        </if>
+        <if test="params.endTime != null and params.endTime != ''">
+            AND #{params.endTime} >= a.create_time
+        </if>
+        <if test="params.disabledFlag != null and params.disabledFlag != ''">
+            AND a.disabled_flag = #{params.disabledFlag}
+        </if>
+        AND (e.apply_state_flag = 1 OR e.apply_state_flag IS NULL)
+        ORDER BY a.id
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM merchant_info
+        WHERE 1 = 1
+        <if test="phone != null and phone != ''">
+            AND phone = #{phone, jdbcType=VARCHAR}
+        </if>
+        <if test="inviteCode != null and inviteCode != ''">
+            AND code = #{inviteCode, jdbcType=VARCHAR}
+        </if>
+    </select>
+    <select id="getMerchantInfoByIdList" resultType="com.diandian.dubbo.facade.model.member.MerchantInfoModel">
+        WITH RECURSIVE t  AS  (
+        select id from merchant_info where parent_id =#{id}
+        union all
+        select merchant_info.id from merchant_info join t as t1  where parent_id = t1.id
+        )
+        select * from merchant_info where
+        id in (
+        select  Id from t
+        )
+        <if test="name != null and name != ''">
+            AND name = #{name, jdbcType=VARCHAR}
+        </if>
+        <if test="phone != null and phone != ''">
+            AND phone = #{phone, jdbcType=VARCHAR}
+        </if>
+        <if test="level != null and level != ''">
+            AND level = #{level, jdbcType=INTEGER}
+        </if>
+        <if test="delFlag != null and delFlag != ''">
+            AND del_flag = #{delFlag, jdbcType=INTEGER}
+        </if>
+    </select>
+    <select id="getListByParentPhone" resultType="com.diandian.dubbo.facade.model.member.MerchantInfoModel">
+        select * from merchant_info where phone=#{parentPhone}
+    </select>
+    <select id="getMerchantList" resultType="com.diandian.dubbo.facade.vo.merchant.MerchantTeamAppVo">
+        select * from merchant_info where parent_id=#{id}
+        <if test="name != null and name != ''">
+            AND name = #{name, jdbcType=VARCHAR}
+        </if>
+        <if test="phone != null and phone != ''">
+            AND phone = #{phone, jdbcType=VARCHAR}
+        </if>
+    </select>
+    <select id="getByParentId" resultType="java.lang.Integer">
+        select count(1) from merchant_info where parent_id=#{id}
+    </select>
+<!--    <select id="countAllNumber" resultType="java.lang.Integer">-->
+<!--        WITH RECURSIVE t  AS  (-->
+<!--        select id from merchant_info where parent_id =#{id}-->
+<!--        union all-->
+<!--        select merchant_info.id from merchant_info join t as t1  where parent_id = t1.id-->
+<!--        )-->
+<!--        select * from merchant_info where-->
+<!--        id in (-->
+<!--        select  Id from t-->
+<!--        )-->
+<!--    </select>-->
+<!--    <select id="TotalCountDirectTeam" resultType="java.lang.Long">-->
+<!--        select count(1) from merchant_info where parent_id=#{id}-->
+<!--        <if test="name != null and name != ''">-->
+<!--            AND name = #{name, jdbcType=VARCHAR}-->
+<!--        </if>-->
+<!--        <if test="phone != null and phone != ''">-->
+<!--            AND phone = #{phone, jdbcType=VARCHAR}-->
+<!--        </if>-->
+<!--    </select>-->
+    <select id="listMerchantPage" parameterType="java.util.Map" resultType="com.diandian.dubbo.facade.model.member.MerchantInfoModel">
+        select * from merchant_info where parent_id=#{params.merchantId}
+        <if test="params.phone != null and params.phone != ''">
+            and phone like CONCAT('%',#{params.phone},'%')
+        </if>
+    </select>
+    <select id="listMerchantPageName" parameterType="java.util.Map" resultType="com.diandian.dubbo.facade.model.member.MerchantInfoModel">
+        select * from merchant_info where parent_id=#{params.merchantId}
+        <if test="params.name != null and params.name != ''">
+            and name like CONCAT('%',#{params.name},'%')
+        </if>
+    </select>
+
+    <select id="getByShopId" resultType="com.diandian.dubbo.facade.model.member.MerchantInfoModel">
+        SELECT
+	*
+FROM
+	merchant_info a
+	LEFT JOIN shop_info b ON b.user_id = a.id
+	WHERE b.id=#{shopId}
+    </select>
+
+    <select id="getByOrderNo" resultType="com.diandian.dubbo.facade.model.member.MerchantInfoModel">
+        SELECT
+	*
+FROM
+	c2c_business.merchant_info a
+	LEFT JOIN c2c_product.order_info b ON b.merchant_id = a.id
+WHERE
+	b.order_no =#{orderNo}
+    </select>
+
+
+</mapper>

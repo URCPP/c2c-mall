@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.BizOpenDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.biz.BizOpenDetailModel">
+        <result column="id" property="id"/>
+        <result column="trade_no" property="tradeNo"/>
+        <result column="trade_type" property="tradeType"/>
+        <result column="bus_type" property="busType"/>
+        <result column="open_type" property="openType"/>
+        <result column="type_id" property="typeId"/>
+        <result column="trade_num" property="tradeNum"/>
+        <result column="trade_start" property="tradeStart"/>
+        <result column="trade_end" property="tradeEnd"/>
+        <result column="org_id" property="orgId"/>
+        <result column="from_org_id" property="fromOrgId"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="openDetailVOListMap" type="com.diandian.dubbo.facade.vo.OrgOpenDetailVO">
+        <result column="trade_no" property="tradeNo"/>
+        <result column="bus_type" property="busType"/>
+        <result column="trade_type" property="tradeType"/>
+        <result column="trade_num" property="tradeNum"/>
+        <result column="create_time" property="createTime"/>
+        <result column="org_name" property="orgName"/>
+        <result column="trade_start" property="tradeStart"/>
+        <result column="trade_end" property="tradeEnd"/>
+        <result column="from_org_name" property="fromOrgName"/>
+        <result column="from_mch_name" property="fromMchName"/>
+        <result column="org_type_name" property="orgTypeName"/>
+        <result column="software_type_name" property="softwareTypeName"/>
+    </resultMap>
+
+    <select id="orgOpenDetailListPage" parameterType="com.diandian.dubbo.facade.dto.biz.OrgAccountQueryDTO" resultMap="openDetailVOListMap">
+        SELECT a.trade_no, b.org_name, a.bus_type, a.trade_type, a.trade_num, a.trade_start, a.trade_end,
+        c.type_name org_type_name, d.type_name software_type_name, e.org_name from_org_name, f.name from_mch_name, a.create_time
+        FROM biz_open_detail a LEFT JOIN sys_org b ON a.org_id = b.id
+        LEFT JOIN sys_org_type c ON a.type_id = c.id
+        LEFT JOIN biz_software_type d ON a.type_id = d.id
+        LEFT JOIN sys_org e ON a.from_org_id = e.id
+        LEFT JOIN merchant_info f ON a.from_org_id = f.id
+        WHERE 1 = 1
+        <if test="query.orgId != null and query.orgId != 0">
+            AND a.org_id = #{query.orgId}
+        </if>
+        <if test="query.tradeType != null">
+            AND a.trade_type = #{query.tradeType}
+        </if>
+        <if test="query.busType != null">
+            AND a.bus_type = #{query.busType}
+        </if>
+        <if test="query.typeId != null">
+            AND a.type_id = #{query.typeId}
+        </if>
+        <if test="query.startTime != null and query.startTime != ''">
+            AND a.create_time >= #{query.startTime}
+        </if>
+        <if test="query.endTime != null and query.endTime != ''">
+            AND #{query.endTime} >= a.create_time
+        </if>
+        ORDER BY a.id DESC
+    </select>
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.admin.business.modules.biz.mapper.BizWithdrawalApplyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.admin.model.biz.BizWithdrawalApplyModel">
+        <result column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="agent_id" property="agentId"/>
+        <result column="withdrawal_amount" property="withdrawalAmount"/>
+        <result column="withdrawal_start" property="withdrawalStart"/>
+        <result column="withdrawal_end" property="withdrawalEnd"/>
+        <result column="withdrawal_fee" property="withdrawalFee"/>
+        <result column="actual_amount" property="actualAmount"/>
+        <result column="audit_user_id" property="auditUserId"/>
+        <result column="audit_state" property="auditState"/>
+        <result column="payment_user_id" property="paymentUserId"/>
+        <result column="payment_state" property="paymentState"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="listWithdrawalApplyPage" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+      SELECT t.id,t.order_no AS orderNo,t.agent_id as agentId,t.withdrawal_amount as withdrawalAmount,
+      t.withdrawal_fee as withdrawalFee,t.actual_amount as actualAmount,t3.username as auditUser,
+      t4.username as paymentUser,t.audit_state as auditState,t.payment_state as paymentState,
+      t.remark,t.create_time as createTime,t.update_time as updateTime,
+      t2.open_bank as openBank,t2.open_branch_bank as openBranchBank,t2.bank_card_no as bankCardNo,t2.account_name as accountName,
+      t2.org_name AS agentName FROM biz_withdrawal_apply t
+      LEFT JOIN biz_org_info t2 ON t.agent_id = t2.id
+      LEFT JOIN sys_user t3 ON t.audit_user_id = t3.id
+      LEFT JOIN sys_user t4 ON t.payment_user_id = t4.id
+      WHERE 1=1
+        <if test="params.orgName != null and params.orgName !=''">
+            and t2.org_name like CONCAT('%',#{params.orgName},'%')
+        </if>
+        <if test="params.auditState != null and params.auditState !=''">
+            and t.audit_state = #{params.auditState}
+        </if>
+        <if test="params.paymentState != null and params.paymentState !=''">
+            and t.payment_state = #{params.paymentState}
+        </if>
+      order by t.payment_state asc,t.audit_state asc,t.create_time desc
+    </select>
+
+</mapper>

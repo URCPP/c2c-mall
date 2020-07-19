@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantAddPriceMapper">
+
+    <select id="selectRecord" resultType="com.diandian.dubbo.facade.model.merchant.MerchantAddPriceModel">
+      SELECT
+	  *
+	  FROM
+	  product_addprice
+	  WHERE
+	  flag = 0
+	  AND DATE_FORMAT( create_time, '%Y-%m-%d' ) le DATE_FORMAT(
+	  DATE_SUB( NOW(), INTERVAL 1 DAY ),
+	  '%Y-%m-%d')
+    </select>
+
+</mapper>

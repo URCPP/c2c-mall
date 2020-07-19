@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantShopClassifyMapper">
+
+
+    <select id="listPage" resultType="com.diandian.dubbo.facade.vo.merchant.MerchantShopClassifyVo">
+        SELECT
+        a.id,
+        a.classify_name ,
+        a.category_type,
+        a.category_parent,
+        a.sort,
+        a.create_time,
+        b.classify_name  AS parentCategoryName
+        FROM
+        merchant_shop_classify a LEFT JOIN
+        merchant_shop_classify b
+        ON
+        a.category_parent
+        = b.id
+        WHERE 1=1
+        <if test="params.categoryParent !=null and params.categoryParent !=''">
+            AND a.category_parent = #{params.categoryParent}
+        </if>
+
+<!--        <if test="params.classify_name !=null and params.classify_name !=''">-->
+<!--            AND a.category_name LIKE CONCAT("%",#{params.categoryName},"%")-->
+<!--        </if>-->
+        ORDER BY  a.id  ASC
+    </select>
+</mapper>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.member.MemberStoredLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.member.MemberStoredLogModel">
+        <result column="id" property="id"/>
+        <result column="bill_no" property="billNo"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="merchant_name" property="merchantName"/>
+        <result column="member_id" property="memberId"/>
+        <result column="member_account" property="memberAccount"/>
+        <result column="member_nick_name" property="memberNickName"/>
+        <result column="member_balance" property="memberBalance"/>
+        <result column="stored_amount" property="storedAmount"/>
+        <result column="real_amount" property="realAmount"/>
+        <result column="exchange_coupon_num" property="exchangeCouponNum"/>
+        <result column="shopping_coupon_amount" property="shoppingCouponAmount"/>
+        <result column="description" property="description"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <!-- 商户下的会员储值记录 -->
+    <select id="listPage" resultType="com.diandian.dubbo.facade.model.member.MemberStoredLogModel">
+        SELECT
+        m.id,
+        m.bill_no,
+        m.merchant_id,
+        m.merchant_name,
+        m.member_id,
+        m.member_account,
+        m.member_nick_name,
+        m.member_balance,
+        m.stored_amount,
+        m.real_amount,
+        m.exchange_coupon_num,
+        m.shopping_coupon_amount,
+        m.description,
+        m.create_time,
+        m.update_time,
+        m.remark
+        FROM
+        member_stored_log m
+        WHERE  1=1
+        <if test="params.merchantId != null and params.merchantId != '' ">
+            and  merchant_id = #{params.merchantId}
+        </if>
+        ORDER BY
+        m.id DESC
+
+    </select>
+</mapper>

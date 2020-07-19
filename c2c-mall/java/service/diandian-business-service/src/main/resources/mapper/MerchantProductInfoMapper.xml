@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantProductInfoMapper">
+
+    <resultMap id="apiMchProductListMap" type="com.diandian.dubbo.facade.dto.api.result.extend.MchProductResultExtendDTO">
+        <result column="sku_id" property="skuId"></result>
+        <result column="category_id" property="categoryId"></result>
+        <result column="id" property="productId"></result>
+        <result column="sku_name" property="productName"></result>
+        <result column="exchange_price" property="exchangeIntegral"></result>
+        <result column="transport_company_name" property="transportCompany"></result>
+        <result column="transport_name" property="transportName"></result>
+        <result column="product_state_flag" property="productState"></result>
+        <result column="transport_type" property="transportType"></result>
+        <result column="update_time" property="lastUpdateTime"></result>
+    </resultMap>
+
+    <select id="listMerchantProductPage" resultType="com.diandian.dubbo.facade.vo.merchant.MerchantProductInfoVO">
+
+        SELECT
+            a.*, b.transport_name AS transportName
+        FROM merchant_product_info a LEFT JOIN transport_info b ON a.transport_ids = b.id
+        WHERE a.del_flag = 0
+        <if test="params.merchantId != null and params.merchantId!='' ">
+            and a.merchant_id = #{params.merchantId}
+        </if>
+
+        <if test="params.skuName != null and params.skuName !=''">
+            and a.sku_name like concat("%", #{params.skuName},"%")
+        </if>
+
+        <if test="params.categoryIds != null and params.categoryIds.size() > 0">
+            and a.category_id IN
+            <foreach collection="params.categoryIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="params.categoryName != null and params.categoryName !=''">
+            and a.category_name like concat("%", #{params.categoryName},"%")
+        </if>
+
+        <if test="params.startPrice != null and params.startPrice !=''">
+            and a.exchange_price &gt;= #{params.startPrice}
+        </if>
+
+        <if test="params.endPrice != null and params.endPrice !=''">
+            and a.exchange_price &lt;= #{params.endPrice}
+        </if>
+
+        <if test="params.productStateFlag != null">
+            and a.product_state_flag = #{params.productStateFlag}
+        </if>
+
+        order by a.create_time desc, a.product_state_flag asc
+
+    </select>
+
+    <select id="getProductTotal" resultType="com.diandian.dubbo.facade.dto.merchant.MerchantProductInfoDTO">
+        SELECT count(id) as productTotal FROM merchant_product_info
+	    WHERE 1=1
+        <if test="params.merchantId != null ">
+            and merchant_id = #{params.merchantId}
+        </if>
+    </select>
+
+    <select id="statisticsProductState" resultType="com.diandian.dubbo.facade.vo.ProductStateNumberVO">
+        SELECT count(id) total, count(IF(product_state_flag = 1, 1, NULL)) normalCnt
+        FROM merchant_product_info
+        WHERE del_flag = 0 AND merchant_id = #{merchantId}
+        <if test="ids != null and ids.size() > 0">
+            AND product_id IN
+            <foreach collection="ids" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="apiListPage" parameterType="java.util.Map" resultMap="apiMchProductListMap">
+        SELECT
+        a.id,
+        a.sku_id,
+        a.sku_name,
+        a.category_id,
+        a.exchange_price,
+        a.product_state_flag,
+        a.update_time,
+        b.transport_name,
+        b.transport_type,
+        d.transport_company_name
+        FROM merchant_product_info a LEFT JOIN transport_info b ON a.transport_ids = b.id
+        LEFT JOIN transport_company d ON b.transport_company_id = d.id
+        WHERE a.del_flag = 0
+        <if test="params.merchantId != null">
+            AND a.merchant_id = #{params.merchantId, jdbcType=BIGINT}
+        </if>
+        <if test="params.categoryId != null">
+            AND a.category_id = #{params.categoryId, jdbcType=BIGINT}
+        </if>
+    </select>
+
+    <select id="apiGetById" parameterType="java.lang.Long" resultMap="apiMchProductListMap">
+        SELECT
+        a.id,
+        a.sku_id,
+        a.sku_name,
+        a.exchange_price,
+        a.product_state_flag,
+        a.update_time,
+        b.transport_name,
+        b.transport_type,
+        d.transport_company_name
+        FROM merchant_product_info a LEFT JOIN transport_info b ON a.transport_ids = b.id
+        LEFT JOIN transport_company d ON b.transport_company_id = d.id
+        WHERE a.id = #{productId, jdbcType=BIGINT}
+    </select>
+
+    <select id="countByProductId" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM merchant_product_info WHERE product_id = #{productId, jdbcType=BIGINT}
+    </select>
+
+</mapper>

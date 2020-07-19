@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.product.mapper.ProductInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.product.ProductInfoModel">
+        <result column="id" property="id"/>
+        <result column="shop_id" property="shopId"/>
+        <result column="shop_name" property="shopName"/>
+        <result column="product_name" property="productName"/>
+        <result column="product_stock" property="productStock"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="introduce" property="introduce"/>
+        <result column="product_html" property="productHtml"/>
+        <result column="virtual_sale_volume" property="virtualSaleVolume"/>
+        <result column="sale_volume" property="saleVolume"/>
+        <result column="image_urls" property="imageUrls"/>
+        <result column="exchange_integral" property="exchangeIntegral"/>
+        <result column="price" property="price"/>
+        <result column="sales_price" property="salesPrice"/>
+        <result column="service_rate" property="serviceRate"/>
+        <result column="state" property="state"/>
+        <result column="recommend_flag" property="recommendFlag"/>
+        <result column="hot_flag" property="hotFlag"/>
+        <result column="new_flag" property="newFlag"/>
+        <result column="perfect_flag" property="perfectFlag"/>
+        <result column="min_buy_num" property="minBuyNum"/>
+        <result column="support_buy_sample" property="supportBuySample"/>
+        <result column="sort" property="sort"/>
+        <result column="weight" property="weight"/>
+        <result column="volume" property="volume"/>
+        <result column="sell_flag" property="sellFlag"/>
+        <result column="sell_url" property="sellUrl"/>
+        <result column="transport_ids" property="transportIds"/>
+        <result column="free_shipping_num" property="freeShippingNum"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="remark" property="remark"/>
+        <result column="discount" property="discount"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="cover_map" property="coverMap"/>
+        <result column="exclusive_member_phone" property="exclusiveMemberPhone"/>
+        <result column="exclusive_rate" property="exclusiveRate"/>
+        <result column="freight" property="freight"/>
+        <collection property="skuList" ofType="com.diandian.dubbo.facade.model.product.ProductSkuModel">
+            <id column="skuId" property="id"/>
+            <result column="product_id" property="productId"/>
+            <result column="sshopId" property="shopId"/>
+            <result column="sku_name" property="skuName"/>
+            <result column="spec_name1" property="specName1"/>
+            <result column="spec_value1" property="specValue1"/>
+            <result column="sCreateTime" property="createTime"/>
+            <result column="sUpdateTime" property="updateTime"/>
+            <result column="sDelFlag" property="delFlag"/>
+            <collection property="priceList" ofType="com.diandian.dubbo.facade.model.product.ProductSkuPriceModel">
+                <result column="priceId" property="id"/>
+                <result column="pSkuId" property="skuId"/>
+                <result column="software_type_id" property="softwareTypeId"/>
+                <result column="software_type_name" property="softwareTypeName"/>
+                <result column="pExchangeIntegral" property="exchangeIntegral"/>
+                <result column="pPrice" property="price"/>
+                <result column="pCreateTime" property="createTime"/>
+                <result column="pUpdateTime" property="updateTime"/>
+            </collection>
+            <collection property="stockList" ofType="com.diandian.dubbo.facade.model.product.ProductSkuStockModel">
+                <result column="stockId" property="id"/>
+                <result column="repository_id" property="repositoryId"/>
+                <result column="repository_name" property="repositoryName"/>
+                <result column="stockSkuId" property="skuId"/>
+                <result column="stock" property="stock"/>
+                <result column="stockCreateTime" property="createTime"/>
+                <result column="stockUpdateTime" property="updateTime"/>
+            </collection>
+        </collection>
+    </resultMap>
+
+    <resultMap id="listPageBackendResult" type="com.diandian.dubbo.facade.model.product.ProductInfoModel">
+        <id column="id" property="id"/>
+        <result column="shop_id" property="shopId"/>
+        <result column="shop_name" property="shopName"/>
+        <result column="product_stock" property="productStock"/>
+        <result column="product_name" property="productName"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="introduce" property="introduce"/>
+        <result column="product_html" property="productHtml"/>
+        <result column="virtual_sale_volume" property="virtualSaleVolume"/>
+        <result column="sale_volume" property="saleVolume"/>
+        <result column="image_urls" property="imageUrls"/>
+        <result column="exchange_integral" property="exchangeIntegral"/>
+        <result column="price" property="price"/>
+        <result column="sales_price" property="salesPrice"/>
+        <result column="service_rate" property="serviceRate"/>
+        <result column="state" property="state"/>
+        <result column="recommend_flag" property="recommendFlag"/>
+        <result column="hot_flag" property="hotFlag"/>
+        <result column="new_flag" property="newFlag"/>
+        <result column="perfect_flag" property="perfectFlag"/>
+        <result column="min_buy_num" property="minBuyNum"/>
+        <result column="support_buy_sample" property="supportBuySample"/>
+        <result column="sort" property="sort"/>
+        <result column="weight" property="weight"/>
+        <result column="volume" property="volume"/>
+        <result column="transport_ids" property="transportIds"/>
+        <result column="free_shipping_num" property="freeShippingNum"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="remark" property="remark"/>
+        <result column="category_name" property="categoryName"/>
+        <collection property="skuList" column="id" ofType="com.diandian.dubbo.facade.model.product.ProductSkuModel"
+                    select="com.diandian.dubbo.product.mapper.ProductSkuMapper.listByProductId"/>
+    </resultMap>
+
+
+    <resultMap id="productInfoDTO" type="com.diandian.dubbo.facade.dto.biz.ProductInfoDTO">
+        <association property="productInfo" javaType="com.diandian.dubbo.facade.model.product.ProductInfoModel">
+            <result column="id" property="id"/>
+            <result column="shop_id" property="shopId"/>
+            <result column="shop_name" property="shopName"/>
+            <result column="product_name" property="productName"/>
+            <result column="introduce" property="introduce"/>
+            <result column="product_html" property="productHtml"/>
+            <result column="virtual_sale_volume" property="virtualSaleVolume"/>
+            <result column="sale_volume" property="saleVolume"/>
+            <result column="image_urls" property="imageUrls"/>
+            <result column="exchange_integral" property="exchangeIntegral"/>
+            <result column="price" property="price"/>
+            <result column="sales_price" property="salesPrice"/>
+            <result column="service_rate" property="serviceRate"/>
+            <result column="state" property="state"/>
+            <result column="recommend_flag" property="recommendFlag"/>
+            <result column="hot_flag" property="hotFlag"/>
+            <result column="new_flag" property="newFlag"/>
+            <result column="perfect_flag" property="perfectFlag"/>
+            <result column="min_buy_num" property="minBuyNum"/>
+            <result column="support_buy_sample" property="supportBuySample"/>
+            <result column="sort" property="sort"/>
+            <result column="weight" property="weight"/>
+            <result column="volume" property="volume"/>
+            <result column="transport_ids" property="transportIds"/>
+            <result column="free_shipping_num" property="freeShippingNum"/>
+            <result column="del_flag" property="delFlag"/>
+            <result column="create_time" property="createTime"/>
+            <result column="update_time" property="updateTime"/>
+            <result column="create_by" property="createBy"/>
+            <result column="update_by" property="updateBy"/>
+            <result column="remark" property="remark"/>
+            <result column="category_name" property="categoryName"/>
+            <result column="cover_map" property="coverMap"/>
+            <result column="freight" property="freight"/>
+        </association>
+        <association property="productSku" javaType="com.diandian.dubbo.facade.model.product.ProductSkuModel">
+            <id column="skuId" property="id"/>
+            <result column="product_id" property="productId"/>
+            <result column="sshopId" property="shopId"/>
+            <result column="sku_name" property="skuName"/>
+            <result column="sCreateTime" property="createTime"/>
+            <result column="sUpdateTime" property="updateTime"/>
+            <result column="sDelFlag" property="delFlag"/>
+        </association>
+        <association property="productSkuPrice" javaType="com.diandian.dubbo.facade.model.product.ProductSkuPriceModel">
+            <result column="priceId" property="id"/>
+            <result column="pSkuId" property="skuId"/>
+            <result column="software_type_id" property="softwareTypeId"/>
+            <result column="software_type_name" property="softwareTypeName"/>
+            <result column="pExchangeIntegral" property="exchangeIntegral"/>
+            <result column="pPrice" property="price"/>
+            <result column="pCreateTime" property="createTime"/>
+            <result column="pUpdateTime" property="updateTime"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="productRepositoryStockMap" type="com.diandian.dubbo.facade.vo.RepositoryDetailVO">
+        <result column="repository_id" property="repositoryId"></result>
+        <result column="repository_name" property="repositoryName"></result>
+        <result column="stock" property="stock"></result>
+    </resultMap>
+
+    <resultMap id="apiProductListMap" type="com.diandian.dubbo.facade.dto.api.result.extend.MchProductResultExtendDTO">
+        <result column="id" property="skuId"></result>
+        <result column="price" property="price"></result>
+        <result column="weight" property="weight"></result>
+        <result column="volume" property="volume"></result>
+        <result column="product_html" property="productHtml"></result>
+        <result column="service_rate" property="serviceRate"></result>
+        <result column="image_urls" property="thumbUrlStr"></result>
+    </resultMap>
+
+<select id="listPage" resultMap="BaseResultMap">
+        select a.* ,
+        b.category_name,
+        s.id AS skuId,s.shop_id AS
+        sshopId,s.product_id,s.sku_name,s.spec_name1,s.spec_value1,s.create_time AS sCreateTime,s.update_time AS sUpdateTime,s.del_flag AS
+        sDelFlag,
+        p.id AS priceId,p.sku_id AS pSkuId,p.software_type_id,p.software_type_name,p.exchange_integral AS
+        pExchangeIntegral,
+        p.price AS pPrice,p.create_time AS pCreateTime, p.update_time AS pUpdateTime,
+        t.id 'stockId',t.repository_id 'repository_id',t.repository_name 'repository_name',t.sku_id 'stockSkuId',
+        t.stock 'stock',t.create_time 'stockCreateTime',t.update_time 'stockUpdateTime'
+        from (select a.*, i.id sku_id from product_info a
+        left join (
+        select Max(m.id) id, m.product_id, Max(n.exchange_integral) exchange_integral from product_sku m left join
+        product_sku_price n on m.id = n.sku_id
+        where 1 = 1
+        <if test="params.softwareTypeId!=null and params.softwareTypeId != ''">
+            and software_type_id = #{params.softwareTypeId}
+        </if>
+        group by m.product_id
+        ) AS i on a.id = i.product_id
+        where a.del_flag = 0
+        <if test="params.keyword!=null and params.keyword!=''">
+            and a.product_name like concat('%',#{params.keyword},'%')
+        </if>
+        <if test="params.state!=null">
+            and a.state=#{params.state}
+        </if>
+        <if test="params.brandId!=null and params.brandId!=''">
+            and a.brand_id=#{params.brandId}
+        </if>
+        <if test="params.perfectFlag!=null and params.perfectFlag!=''">
+            and a.perfect_flag=#{params.perfectFlag}
+        </if>
+        <if test="params.newFlag!=null and params.newFlag!=''">
+            and a.new_flag=#{params.newFlag}
+        </if>
+        <if test="params.hotFlag!=null and params.hotFlag!=''">
+            and a.hot_flag=#{params.hotFlag}
+        </if>
+        <if test="params.minDiscount!=null and params.minDiscount != ''">
+            and a.discount >= #{params.minDiscount}
+        </if>
+        <if test="params.maxDiscount!=null and params.maxDiscount != ''">
+            and #{params.maxDiscount} > a.discount
+        </if>
+        <if test="params.minPrice!=null and params.minPrice != ''">
+            and i.exchange_integral >= #{params.minPrice}
+        </if>
+        <if test="params.maxPrice!=null and params.maxPrice != ''">
+            and #{params.maxPrice} > i.exchange_integral
+        </if>
+        <if test="params.searchCatelogIds!=null and params.searchCatelogIds.size()>0">
+            and a.category_id in
+            <foreach collection="params.searchCatelogIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by
+        <if test="params.saleVolume=='true'">
+            (
+            ifnull(a.sale_volume,0) + ifnull(a.virtual_sale_volume, 0)
+            ) desc,
+        </if>
+        <if test="params.saleVolume=='false'">
+            a.virtual_sale_volume asc,
+        </if>
+        <if test="params.price=='true'">
+            a.price desc,
+        </if>
+        <if test="params.price=='false'">
+            a.price asc,
+        </if>
+        <if test="params.createTime=='true'">
+            a.id desc,
+        </if>
+        <if test="params.createTime=='false'">
+            a.id asc,
+        </if>
+        a.sort
+        LIMIT #{curPage},#{pageSize}) a
+        left join product_category b on a.category_id = b.id
+        left join product_sku s on s.id = a.sku_id
+        left join product_sku_price p on p.sku_id = s.id
+        left join product_sku_stock t on t.sku_id=s.id
+        WHERE a.del_flag=0
+        order by
+        <if test="params.saleVolume=='true'">
+            (
+            ifnull(a.sale_volume,0) + ifnull(a.virtual_sale_volume, 0)
+            ) desc,
+        </if>
+        <if test="params.saleVolume=='false'">
+            a.virtual_sale_volume asc,
+        </if>
+        <if test="params.price=='true'">
+            a.price desc,
+        </if>
+        <if test="params.price=='false'">
+            a.price asc,
+        </if>
+        <if test="params.createTime=='true'">
+            a.id desc,
+        </if>
+        <if test="params.createTime=='false'">
+            a.id asc,
+        </if>
+        a.sort
+    </select>
+
+
+    <select id="listPageBackend" resultMap="listPageBackendResult">
+        select a.* ,b.category_name
+        from product_info a
+        left join product_category b on a.category_id = b.id
+        where a.del_flag = 0
+        <if test="params.keyword!=null and params.keyword!=''">
+            and a.product_name like concat('%',#{params.keyword},'%')
+        </if>
+        <if test="params.state!=null and params.state != ''">
+            and a.state=#{params.state}
+        </if>
+        <if test="params.hotFlag!=null and params.hotFlag!=''">
+            and a.hot_flag=#{params.hotFlag}
+        </if>
+        <if test="params.newFlag!=null and params.newFlag != ''">
+            and a.new_flag=#{params.newFlag}
+        </if>
+        <if test="params.searchCatelogIds!=null and params.searchCatelogIds.size()>0">
+            and a.category_id in
+            <foreach collection="params.searchCatelogIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.searchShopName!=null">
+            and a.shop_name like concat('%',#{params.searchShopName},'%')
+        </if>
+        order by a.create_time desc
+    </select>
+
+
+    <select id="listBackend" resultMap="listPageBackendResult">
+        SELECT
+        b.*,
+        c.category_name
+        FROM
+        c2c_business.shop_info a
+        RIGHT JOIN c2c_product.product_info b ON a.id = b.shop_id
+        LEFT JOIN c2c_product.product_classify c ON b.category_id = c.id
+        WHERE
+        b.del_flag = 0
+        <if test="params.keyword!=null and params.keyword!=''">
+            and b.product_name like concat('%',#{params.keyword},'%')
+        </if>
+        <if test="params.state!=null and params.state != ''">
+            and b.state=#{params.state}
+        </if>
+        <if test="params.hotFlag!=null and params.hotFlag!=''">
+            and b.hot_flag=#{params.hotFlag}
+        </if>
+        <if test="params.newFlag!=null and params.newFlag != ''">
+            and b.new_flag=#{params.newFlag}
+        </if>
+        <if test="params.searchCatelogIds!=null and params.searchCatelogIds.size()>0">
+            and b.category_id in
+            <foreach collection="params.searchCatelogIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.searchShopName!=null">
+            and b.shop_name like concat('%',#{params.searchShopName},'%')
+        </if>
+        <if test="params.merchantId !=null">
+            and a.merchant_id=#{params.merchantId}
+        </if>
+        order by b.create_time desc
+    </select>
+
+    <select id="getById" resultMap="BaseResultMap">
+        select a.* ,b.category_name,
+        s.id AS skuId,s.shop_id AS sshopId,s.product_id,s.sku_name,s.spec_name1,s.spec_value1,s.create_time AS sCreateTime,s.update_time AS sUpdateTime,s.del_flag AS
+        sDelFlag,
+        p.id AS priceId,p.sku_id AS pSkuId,p.software_type_id,p.software_type_name,p.exchange_integral AS pExchangeIntegral,
+        p.price AS pPrice,p.create_time AS pCreateTime, p.update_time AS pUpdateTime,
+        stock.id AS stockId,stock.repository_id,stock.repository_name,stock.sku_id AS stockSkuId,stock.stock,stock.create_time AS stockCreateTime,stock.update_time AS stockUpdateTime
+        from product_info a
+        left join product_category b on a.category_id = b.id
+        left join product_sku s on s.product_id = a.id
+        left join product_sku_price p on p.sku_id = s.id
+        left join product_sku_stock stock on stock.sku_id = s.id
+        where a.id = #{id}
+    </select>
+
+
+
+    <select id="getProductById" resultMap="productInfoDTO">
+        select a.*,b.category_name,
+        s.id AS skuId,s.shop_id AS sshopId,s.product_id,s.sku_name,s.spec_name1,s.spec_value1,s.create_time AS sCreateTime,s.update_time AS sUpdateTime,s.del_flag AS
+        sDelFlag
+        from product_info a
+        left join product_classify b on a.category_id = b.id
+        left join product_sku s on s.product_id = a.id
+        where a.id = #{id}
+    </select>
+
+    <select id="getProductBySku" resultMap="productInfoDTO">
+        select a.* ,
+        s.id AS skuId,s.shop_id AS
+        sshopId,s.product_id,s.sku_name,s.spec_name1,s.spec_value1,s.create_time AS sCreateTime,s.update_time AS sUpdateTime,s.del_flag AS
+        sDelFlag,
+        p.id AS priceId,p.sku_id AS pSkuId,p.software_type_id,p.software_type_name,p.exchange_integral AS
+        pExchangeIntegral,
+        p.price AS pPrice,p.create_time AS pCreateTime, p.update_time AS pUpdateTime
+        from product_sku s
+        inner join product_info a on s.product_id = a.id
+        inner join product_sku_price p on p.sku_id = s.id and p.software_type_id = #{params.softwareTypeId}
+        where p.software_type_id = #{params.softwareTypeId}
+        <if test="params.skuIds!=null and params.skuIds.size()>0">
+            and s.id in
+            <foreach collection="params.skuIds" item="id" index="index" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        order by s.id desc
+    </select>
+
+    <select id="getProductRepositoryStock" resultMap="productRepositoryStockMap">
+        SELECT b.repository_id, b.repository_name, b.stock
+        FROM product_sku a LEFT JOIN product_sku_stock b ON a.id = b.sku_id
+        WHERE a.del_flag = 0 AND a.product_id = #{productId, jdbcType=BIGINT} AND a.id = #{skuId, jdbcType=BIGINT}
+        ORDER BY b.repository_id ASC
+    </select>
+
+    <select id="countRangeNum" resultType="java.util.Map">
+        select
+        sum(a.virtual_sale_volume+ifnull(a.sale_volume,0)) as saleVolumeRangeNum,
+        sum(if(a.new_flag,ifnull(a.virtual_sale_volume,0)+ifnull(a.sale_volume,0),0)) as newRangeNum
+        from product_info a
+    </select>
+
+    <select id="apiList" parameterType="java.util.List" resultMap="apiProductListMap">
+        SELECT
+        a.id,
+        c.price,
+        b.weight,
+        b.volume,
+        b.product_html,
+        b.service_rate,
+        b.image_urls
+        FROM product_sku a LEFT JOIN product_info b ON a.product_id = b.id
+        LEFT JOIN product_sku_price c ON a.id = c.sku_id
+        WHERE 1 = 1 AND c.software_type_id = #{softTypeId, jdbcType=BIGINT}
+        <if test="ids != null and ids.size() > 0">
+            AND a.id IN
+            <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="apiGetById" parameterType="java.lang.Long" resultMap="apiProductListMap">
+        SELECT
+        a.id,
+        c.price,
+        b.weight,
+        b.volume,
+        b.product_html,
+        b.service_rate,
+        b.image_urls
+        FROM product_sku a LEFT JOIN product_info b ON a.product_id = b.id
+        LEFT JOIN product_sku_price c ON a.id = c.sku_id
+        WHERE a.id = #{skuId, jdbcType=BIGINT} AND c.software_type_id = #{softTypeId, jdbcType=BIGINT}
+    </select>
+
+    <select id="getListPageByShopId" resultMap="listPageBackendResult">
+        select a.* ,b.category_name
+        from product_info a
+        left join product_category b on a.category_id = b.id
+        LEFT JOIN product_sku c ON c.product_id=a.id
+        LEFT JOIN product_sku_price d ON d.sku_id=c.id
+        where a.del_flag = 0
+        and a.shop_id=#{params.shopId}
+        <if test="params.keyword!=null and params.keyword!=''">
+            and a.product_name like concat('%',#{params.keyword},'%')
+        </if>
+        <if test="params.state!=null and params.state != ''">
+            and a.state=#{params.state}
+        </if>
+        <if test="params.hotFlag!=null and params.hotFlag!=''">
+            and a.hot_flag=#{params.hotFlag}
+        </if>
+        <if test="params.newFlag!=null and params.newFlag != ''">
+            and a.new_flag=#{params.newFlag}
+        </if>
+        <if test="params.searchCatelogIds!=null and params.searchCatelogIds.size()>0">
+            and a.category_id in
+            <foreach collection="params.searchCatelogIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.minPrice!=null and params.minPrice!=''">
+            and d.software_type_id=#{params.softwareTypeId}
+            and d.price <![CDATA[ > ]]> #{params.minPrice}
+        </if>
+        <if test="params.maxPrice!=null and params.maxPrice!=''">
+            and d.software_type_id=#{params.softwareTypeId}
+            and d.price <![CDATA[ <= ]]> #{params.maxPrice}
+        </if>
+        <if test="params.exclusiveMemberPhone!=null and params.exclusiveMemberPhone!=''">
+            and a.exclusive_member_phone=#{params.exclusiveMemberPhone}
+        </if>
+        group by a.id
+        order by a.create_time desc
+    </select>
+    <select id="listPageByShopId" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM
+        product_info a
+        LEFT JOIN product_sku b ON b.product_id = a.id
+        LEFT JOIN product_sku_price c ON c.sku_id = b.id
+        LEFT JOIN product_sku_stock d ON d.sku_id = b.id
+        WHERE a.del_flag=0
+        AND a.shop_id=#{params.shopId}
+        <if test="params.productName!=null and params.productName!=''">
+            AND a.product_name like concat('%',#{params.productName},'%')
+        </if>
+        <if test="params.categoryId!=null and params.categoryId!=''">
+            AND a.category_id=#{params.categoryId}
+        </if>
+        <if test="params.state!=null and params.state!=''">
+            AND a.state=#{params.state}
+        </if>
+        <if test="params.smallPrice!=null and params.smallPrice!=''">
+        AND (c.software_type_id=1104994625655316481 AND c.price <![CDATA[ > ]]> #{params.smallPrice})
+        </if>
+        <if test="params.bigPrice!=null and params.bigPrice!=''">
+            AND (c.software_type_id=1104994625655316481 AND c.price <![CDATA[ <= ]]> #{params.bigPrice})
+        </if>
+    </select>
+    <select id="getByIds" resultMap="BaseResultMap" parameterType="list">
+        select a.* ,b.category_name,
+        s.id AS skuId,s.shop_id AS sshopId,s.product_id,s.sku_name,s.spec_name1,s.spec_value1,s.create_time AS sCreateTime,s.update_time AS sUpdateTime,s.del_flag AS
+        sDelFlag,
+        p.id AS priceId,p.sku_id AS pSkuId,p.software_type_id,p.software_type_name,p.exchange_integral AS pExchangeIntegral,
+        p.price AS pPrice,p.create_time AS pCreateTime, p.update_time AS pUpdateTime,
+        stock.id AS stockId,stock.repository_id,stock.repository_name,stock.sku_id AS stockSkuId,stock.stock,stock.create_time AS stockCreateTime,stock.update_time AS stockUpdateTime
+        from product_info a
+        left join product_category b on a.category_id = b.id
+        left join product_sku s on s.product_id = a.id
+        left join product_sku_price p on p.sku_id = s.id
+        left join product_sku_stock stock on stock.sku_id = s.id
+        where a.id in
+        <foreach collection="ids" item="item" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+
+    </select>
+
+    <select id="getByShopId" resultMap="BaseResultMap">
+        SELECT
+	a.*,
+        b.id AS skuId,b.shop_id AS sshopId,b.product_id,b.sku_name,b.spec_name1,b.spec_value1,b.create_time AS sCreateTime,b.update_time AS sUpdateTime,b.del_flag AS
+        sDelFlag,
+        c.id AS priceId,c.sku_id AS pSkuId,c.software_type_id,c.software_type_name,c.exchange_integral AS pExchangeIntegral,
+        c.price AS pPrice,c.create_time AS pCreateTime, c.update_time AS pUpdateTime,
+        d.id AS d,d.repository_id,d.repository_name,d.sku_id AS stockSkuId,d.stock,d.create_time AS stockCreateTime,d.update_time AS stockUpdateTime
+FROM
+	product_info a
+	LEFT JOIN product_sku b ON b.product_id = a.id
+	LEFT JOIN product_sku_price c ON c.sku_id = b.id
+	LEFT JOIN product_sku_stock d ON d.sku_id = b.id
+WHERE
+	a.del_flag = 0
+	AND a.state = 1
+	AND a.shop_id = #{params.shopId}
+        <if test="params.exclusiveMemberPhone!=null and params.exclusiveMemberPhone!=''">
+            AND a.exclusive_member_phone=#{params.exclusiveMemberPhone}
+        </if>
+	<if test="params.isNew==1">
+	ORDER BY a.create_time DESC
+    </if>
+    </select>
+
+    <select id="getExclusiveProduct" resultMap="BaseResultMap">
+        SELECT
+	a.*,
+        b.id AS skuId,b.shop_id AS sshopId,b.product_id,b.sku_name,b.spec_name1,b.spec_value1,b.spec_value3,b.create_time AS sCreateTime,b.update_time AS sUpdateTime,b.del_flag AS
+        sDelFlag,
+        c.id AS priceId,c.sku_id AS pSkuId,c.software_type_id,c.software_type_name,c.exchange_integral AS pExchangeIntegral,
+        c.price AS pPrice,c.create_time AS pCreateTime, c.update_time AS pUpdateTime,
+        d.id AS d,d.repository_id,d.repository_name,d.sku_id AS stockSkuId,d.stock,d.create_time AS stockCreateTime,d.update_time AS stockUpdateTime
+FROM
+	product_info a
+	LEFT JOIN product_sku b ON b.product_id = a.id
+	LEFT JOIN product_sku_price c ON c.sku_id = b.id
+	LEFT JOIN product_sku_stock d ON d.sku_id = b.id
+	WHERE a.exclusive_member_phone=#{phone}
+    </select>
+
+    <update id="subStock">
+        update product_info set product_stock = product_stock - #{subNum} where id = #{id}  and product_stock=#{currentStock} and product_stock>=#{subNum}
+    </update>
+</mapper>

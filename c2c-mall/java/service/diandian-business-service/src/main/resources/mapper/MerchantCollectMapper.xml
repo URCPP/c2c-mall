@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantCollectMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.merchant.MerchantCollectModel">
+        <result column="id" property="id"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="material_id" property="materialId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+
+    <resultMap id="MyResultMap" type="com.diandian.dubbo.facade.model.material.MaterialDetailModel">
+        <result column="id" property="id"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="product_id" property="productId"/>
+        <result column="user_name" property="userName"/>
+        <result column="share_content" property="shareContent"/>
+        <result column="material_img" property="materialImg"/>
+        <result column="comment" property="comment"/>
+        <result column="collect_state" property="collectState"/>
+        <result column="like_num" property="likeNum"/>
+        <result column="pageview" property="pageview"/>
+        <result column="share_num" property="shareNum"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="findCollect" resultType="com.diandian.dubbo.facade.model.material.MaterialDetailModel">
+        	select c.name as userName, c.avatar,b.* from merchant_collect a right join material_detail b on a.material_id=b.id left join merchant_info c on b.merchant_id=c.id
+        	where  a.merchant_id=#{merchantId} and b.product_id=#{productId} and b.share_num>0
+    </select>
+</mapper>

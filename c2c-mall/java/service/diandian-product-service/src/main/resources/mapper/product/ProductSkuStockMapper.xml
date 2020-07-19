@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.product.mapper.ProductSkuStockMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.product.ProductSkuStockModel">
+        <result column="id" property="id"/>
+        <result column="repository_id" property="repositoryId"/>
+        <result column="repository_name" property="repositoryName"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="stock" property="stock"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <update id="subStockBySkuIdAndRepositoryId">
+        update product_sku_stock set stock = stock - #{subNum} where sku_id = #{skuId} and repository_id = #{repositoryId} and stock=#{currentStock} and stock>=#{subNum}
+    </update>
+
+    <update id="addStockBySkuIdAndRepositoryId">
+        update product_sku_stock set stock = stock + #{addNum} where sku_id = #{skuId} and repository_id = #{repositoryId} and stock=#{currentStock}
+    </update>
+
+    <select id="countStockNum" parameterType="java.lang.Long" resultType="java.lang.Integer">
+            SELECT IFNULL(SUM(IFNULL(stock,0)),0)
+            FROM
+            product_sku_stock
+            WHERE sku_id = #{skuId,jdbcType=BIGINT}
+    </select>
+
+    <select id="listBySkuId" resultType="com.diandian.dubbo.facade.model.product.ProductSkuStockModel">
+        select * from product_sku_stock where sku_id=#{skuId}
+    </select>
+
+</mapper>

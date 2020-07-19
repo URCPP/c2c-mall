@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.SysOrgTypeMapper">
+
+    <resultMap id="orgTypeOpenOverviewVOMap" type="com.diandian.dubbo.facade.vo.StatisticsTypeOpenCntVO">
+        <result property="typeId" column="id"/>
+        <result property="typeName" column="type_name"/>
+        <result property="level" column="level"/>
+        <result property="payCnt" column="pay_cnt"/>
+        <result property="freeCnt" column="free_cnt"/>
+    </resultMap>
+
+    <resultMap id="orgTypeOpenFeeVOMap" type="com.diandian.dubbo.facade.vo.StatisticsTypeOpenFeeVO">
+        <result property="typeId" column="id"/>
+        <result property="type" column="type"/>
+        <result property="level" column="level"/>
+        <result property="typeName" column="type_name"/>
+        <result property="openCnt" column="open_cnt"/>
+        <result property="openingCost" column="opening_cost"/>
+    </resultMap>
+
+    <select id="getOrgTypeOpenOverview" parameterType="java.util.Map" resultMap="orgTypeOpenOverviewVOMap">
+        SELECT
+        a.id,
+        0 AS type,
+        a.type_name,
+        a.level,
+        COUNT(IF(b.open_type = 0,b.id,null)) pay_cnt,
+        COUNT(IF(b.open_type = 1,b.id,null)) free_cnt
+        FROM sys_org_type a LEFT JOIN (
+            SELECT open_type, id, org_type_id FROM biz_org_info WHERE 1 = 1
+            <if test="params.startTime != null and params.startTime != ''">
+                AND create_time >= #{params.startTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                AND #{params.endTime} >= create_time
+            </if>
+        ) AS b ON a.id = b.org_type_id
+        WHERE a.del_flag = 0
+        GROUP BY a.id
+    </select>
+    <select id="statisticsOrgTypeOpenFee" parameterType="java.util.Map" resultMap="orgTypeOpenFeeVOMap">
+        SELECT a.id, 0 AS type, a.type_name, a.level, a.opening_cost, b.open_cnt
+        FROM sys_org_type a LEFT JOIN (
+            SELECT org_type_id, COUNT(id) open_cnt FROM biz_org_info
+            WHERE open_type = 0
+            <if test="params.startTime != null and params.startTime != ''">
+                AND create_time >= #{params.startTime}
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                AND #{params.endTime} >= create_time
+            </if>
+            GROUP BY org_type_id
+        ) AS b ON a.id = b.org_type_id
+        WHERE a.del_flag = 0
+    </select>
+</mapper>

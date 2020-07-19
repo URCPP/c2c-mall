@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.BizSoftwareTypeMapper">
+
+    <resultMap id="softwareTypeOpenOverviewVOMap" type="com.diandian.dubbo.facade.vo.StatisticsTypeOpenCntVO">
+        <result property="typeId" column="id"/>
+        <result property="type" column="type"/>
+        <result property="typeName" column="type_name"/>
+        <result property="payCnt" column="pay_cnt"/>
+        <result property="freeCnt" column="free_cnt"/>
+    </resultMap>
+
+    <resultMap id="softwareTypeOpenFeeVOMap" type="com.diandian.dubbo.facade.vo.StatisticsTypeOpenFeeVO">
+        <result property="typeId" column="id"/>
+        <result property="type" column="type"/>
+        <result property="typeName" column="type_name"/>
+        <result property="openCnt" column="open_cnt"/>
+        <result property="openingCost" column="opening_cost"/>
+    </resultMap>
+
+    <select id="getSoftwareOpenOverview" parameterType="java.util.Map" resultMap="softwareTypeOpenOverviewVOMap">
+        SELECT m.id, 1 AS type, m.type_name, COUNT(IF(n.open_type = 0, n.id, null)) pay_cnt, COUNT(IF(n.open_type = 1, n.id, null)) free_cnt
+        FROM biz_software_type m LEFT JOIN (
+            SELECT a.id, a.soft_type_id, a.open_type
+            FROM merchant_info a LEFT JOIN merchant_open_apply_log b ON a.id = b.merchant_id
+            WHERE a.del_flag = 0 AND approve_flag = 2
+            <if test="params.startTime != null and params.startTime != '' and params.endTime != null and params.endTime != ''">
+                AND ((a.create_time >= #{params.startTime} AND #{params.endTime} >= a.create_time) OR (b.audit_time >= #{params.startTime} AND #{params.endTime} >= b.audit_time))
+            </if>
+        ) AS n ON m.id = n.soft_type_id WHERE m.del_flag = 0 GROUP BY m.id
+    </select>
+    <select id="statisticsSoftwareTypeOpenFee" parameterType="java.util.Map" resultMap="softwareTypeOpenFeeVOMap">
+        SELECT m.id, 1 AS type, m.type_name, m.opening_cost, n.open_cnt
+        FROM biz_software_type m LEFT JOIN (
+            SELECT a.soft_type_id, COUNT(a.id) open_cnt
+            FROM merchant_info a LEFT JOIN merchant_open_apply_log b ON a.id = b.merchant_id
+            WHERE a.del_flag = 0 AND a.approve_flag = 2 AND a.open_type = 0
+            <if test="params.startTime != null and params.startTime != '' and params.endTime != null and params.endTime != ''">
+                AND ((a.create_time >= #{params.startTime} AND #{params.endTime} >= a.create_time) OR (b.audit_time >= #{params.startTime} AND #{params.endTime} >= b.audit_time))
+            </if>
+            GROUP BY a.soft_type_id
+        ) AS n ON m.id = n.soft_type_id
+        WHERE m.del_flag = 0
+    </select>
+</mapper>

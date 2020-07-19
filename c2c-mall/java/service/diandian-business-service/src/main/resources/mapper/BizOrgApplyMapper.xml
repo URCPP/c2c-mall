@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.BizOrgApplyMapper">
+
+    <resultMap id="orgApplyInfoListVOMap" type="com.diandian.dubbo.facade.vo.OrgApplyInfoListVO">
+        <result column="id" property="id"/>
+        <result column="apply_no" property="applyNo"/>
+        <result column="apply_type" property="applyType"/>
+        <result column="org_id" property="orgId"/>
+        <result column="org_name" property="orgName"/>
+        <result column="org_type_name" property="orgTypeName"/>
+        <result column="phone" property="phone"/>
+        <result column="audit_state" property="auditState"/>
+        <result column="create_time" property="createTime"/>
+        <result column="contact_name" property="contactName"/>
+        <result column="audit_fail_reason" property="auditFailReason"/>
+        <result column="parent_contact_name" property="parentContactName"/>
+        <result column="parent_phone" property="parentPhone"/>
+        <result column="parent_name" property="parentName"/>
+        <result column="parent_type_name" property="parentTypeName"/>
+        <result column="recommend_contact_name" property="recommendContactName"/>
+        <result column="recommend_phone" property="recommendPhone"/>
+        <result column="recommend_name" property="recommendName"/>
+        <result column="recommend_type_name" property="recommendTypeName"/>
+    </resultMap>
+
+    <resultMap id="orgApplyInfoDetailVOMap" type="com.diandian.dubbo.facade.vo.OrgApplyInfoDetailVO">
+        <result column="id" property="id"/>
+        <result column="apply_no" property="applyNo"/>
+        <result column="org_name" property="orgName"/>
+        <result column="org_type_id" property="orgTypeId"/>
+        <result column="type_name" property="orgTypeName"/>
+        <result column="province_code" property="provinceCode"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="address" property="address"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="idcard" property="idcard"/>
+        <result column="idcard_positive_pic" property="idcardPositivePic"/>
+        <result column="idcard_reverse_pic" property="idcardReversePic"/>
+        <result column="business_license_pic" property="businessLicensePic"/>
+        <result column="open_bank" property="openBank"/>
+        <result column="open_branch_bank" property="openBranchBank"/>
+        <result column="bank_card_no" property="bankCardNo"/>
+        <result column="bank_card_pic" property="bankCardPic"/>
+        <result column="account_name" property="accountName"/>
+        <result column="audit_state" property="auditState"/>
+        <result column="audit_time" property="auditTime"/>
+        <result column="audit_fail_reason" property="auditFailReason"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="recommend_id" property="recommendId"/>
+        <result column="original_id" property="originalId"/>
+        <result column="original_type" property="originalType"/>
+        <result column="payment_pic" property="paymentPic"/>
+        <result column="province_name" property="provinceName"/>
+        <result column="city_name" property="cityName"/>
+        <result column="area_name" property="areaName"/>
+        <result column="contact_name" property="contactName"/>
+        <result column="business_license_code" property="businessLicenseCode"/>
+        <result column="info_is_personal" property="infoIsPersonal"/>
+        <result column="power_attorney_pic" property="powerAttorneyPic"/>
+    </resultMap>
+
+    <select id="orgApplyInfoListPage" parameterType="java.util.Map" resultMap="orgApplyInfoListVOMap">
+        SELECT
+        a.id,
+        a.apply_no,
+        a.apply_type,
+        a.org_name,
+        a.org_type_name,
+        a.phone,
+        a.audit_state,
+        a.audit_fail_reason,
+        a.create_time,
+        b.id org_id,
+        a.contact_name,
+        c.contact_name parent_contact_name,
+        c.phone parent_phone,
+        c.org_name parent_name,
+        d.type_name parent_type_name,
+        e.contact_name recommend_contact_name,
+        e.phone recommend_phone,
+        e.org_name recommend_name,
+        f.type_name recommend_type_name
+        FROM biz_org_apply a LEFT JOIN sys_org b ON a.id = b.apply_id LEFT JOIN biz_org_info c ON a.parent_id = c.org_id
+        LEFT JOIN sys_org_type d ON c.org_type_id = d.id LEFT JOIN biz_org_info e ON a.recommend_id = e.org_id
+        LEFT JOIN sys_org_type f ON e.org_type_id = f.id
+        WHERE 1 = 1
+        <if test="params.parentId != null and params.parentId != '' and params.parentId != 0">
+            AND a.parent_id = #{params.parentId}
+        </if>
+        <if test="params.orgTypeId != null and params.orgTypeId != '' and params.orgTypeId != 0">
+            AND a.org_type_id = #{params.orgTypeId}
+        </if>
+        <if test="params.orgName != null and params.orgName != ''">
+            AND a.org_name LIKE CONCAT('%', #{params.orgName} ,'%')
+        </if>
+        <if test="params.parentPhone != null and params.parentPhone != ''">
+            AND c.phone LIKE CONCAT('%', #{params.parentPhone} ,'%')
+        </if>
+        <if test="params.applyType != null and params.applyType != ''">
+            AND a.apply_type = #{params.applyType}
+        </if>
+        <if test="params.parentContactName != null and params.parentContactName != ''">
+            AND c.contact_name LIKE CONCAT('%', #{params.parentContactName}, '%')
+        </if>
+        <if test="params.auditState != null and params.auditState != ''">
+            AND a.audit_state = #{params.auditState}
+        </if>
+        <if test="params.recommendId != null and params.recommendId != '' and params.recommendId != 0">
+            OR a.recommend_id = #{params.recommendId}
+        </if>
+        ORDER BY a.id DESC
+    </select>
+
+    <select id="getOrgApplyInfoDetail" resultMap="orgApplyInfoDetailVOMap">
+        SELECT
+        a.id,
+        a.apply_no,
+        a.apply_type,
+        a.org_name,
+        a.original_id,
+        a.original_type,
+        a.org_type_id,
+        a.province_code,
+        a.province_name,
+        a.city_code,
+        a.city_name,
+        a.area_code,
+        a.area_name,
+        a.address,
+        a.contact_name,
+        a.phone,
+        a.email,
+        a.idcard,
+        a.idcard_positive_pic,
+        a.idcard_reverse_pic,
+        a.business_license_pic,
+        a.business_license_code,
+        a.open_bank,
+        a.open_branch_bank,
+        a.bank_card_no,
+        a.bank_card_pic,
+        a.account_name,
+        a.audit_state,
+        a.audit_time,
+        a.audit_fail_reason,
+        a.parent_id,
+        a.recommend_id,
+        a.recommend_type,
+        a.info_is_personal,
+        a.power_attorney_pic,
+        d.pic payment_pic,
+        e.type_name
+        FROM biz_org_apply a LEFT JOIN biz_payment_pic d ON a.id = d.apply_id LEFT JOIN sys_org_type e ON a.org_type_id = e.id
+        WHERE a.id = #{id, jdbcType=BIGINT}
+    </select>
+
+</mapper>

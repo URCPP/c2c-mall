@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.BizWithdrawalsRecordMapper">
+
+    <resultMap id="BaseResult" type="com.diandian.dubbo.facade.model.biz.BizWithdrawalsRecordModel">
+        <result column="id" property="id"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="cash_withdrawal_amount" property="cashWithdrawalAmount"/>
+        <result column="state" property="state"/>
+        <collection property="shop" ofType="com.diandian.dubbo.facade.model.shop.ShopInfoModel">
+            <result column="id" property="id"/>
+            <result column="shop_type_id" property="shopTypeId"/>
+            <result column="shopTypeName" property="shopTypeName"/>
+            <result column="shop_name" property="shopName"/>
+            <result column="introduce" property="introduce"/>
+            <result column="contact_name" property="contactName"/>
+            <result column="contact_phone" property="contactPhone"/>
+            <result column="del_flag" property="delFlag"/>
+            <result column="remark" property="remark"/>
+            <result column="create_time" property="createTime"/>
+            <result column="update_time" property="updateTime"/>
+            <result column="create_by" property="createBy"/>
+            <result column="update_by" property="updateBy"/>
+            <result column="merchant_id" property="merchantId"/>
+            <result column="state" property="state"/>
+        </collection>
+        <collection property="bank" ofType="com.diandian.dubbo.facade.model.biz.BizBankCardInformationModel">
+            <result column="id" property="id"/>
+            <result column="create_time" property="createTime"/>
+            <result column="update_time" property="updateTime"/>
+            <result column="create_by" property="createBy"/>
+            <result column="update_by" property="updateBy"/>
+            <result column="remark" property="remark"/>
+            <result column="del_flag" property="delFlag"/>
+            <result column="shop_id" property="shopId"/>
+            <result column="bank_name" property="bankName"/>
+            <result column="bank_card_number" property="bankCardNumber"/>
+            <result column="opening_bank" property="openingBank"/>
+            <result column="user_name" property="userName"/>
+            <result column="reserve_cell_phone_number" property="reserveCellPhoneNumber"/>
+        </collection>
+    </resultMap>
+
+    <select id="listPage" resultMap="BaseResult">
+SELECT
+	* 
+FROM
+	biz_withdrawals_record a
+	LEFT JOIN shop_info b ON b.id = a.shop_id
+	LEFT JOIN biz_bank_card_information c ON a.bank_id = c.id
+	WHERE a.del_flag=0
+	<if test="params.state!=null and params.state!=''">
+        AND a.state=#{params.state}
+    </if>
+    ORDER BY a.create_time DESC
+    </select>
+</mapper>

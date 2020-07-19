@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.BizBusinessInformationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.biz.BizBusinessInformationModel">
+        <result column="id" property="id"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="shop_id" property="shopId"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="business_name" property="businessName"/>
+        <result column="business_type" property="businessType"/>
+        <result column="account_licence" property="accountLicence"/>
+        <result column="registered_area" property="registeredArea"/>
+        <result column="registration_address" property="registrationAddress"/>
+        <result column="business_address" property="businessAddress"/>
+        <result column="business_scope" property="businessScope"/>
+        <result column="found_date" property="foundDate"/>
+        <result column="registered_capital" property="registeredCapital"/>
+        <result column="currency" property="currency"/>
+        <result column="business_term_start" property="businessTermStart"/>
+        <result column="business_term_end" property="businessTermEnd"/>
+        <result column="unified_social_credit_code" property="unifiedSocialCreditCode"/>
+        <result column="business_license" property="businessLicense"/>
+        <result column="invoice_proof" property="invoiceProof"/>
+        <result column="general_taxpayer_qualification" property="generalTaxpayerQualification"/>
+        <result column="legal_person_name" property="legalPersonName"/>
+        <result column="legal_person_id_number" property="legalPersonIdNumber"/>
+        <result column="legal_person_identity_card_photos" property="legalPersonIdentityCardPhotos"/>
+        <result column="identity_card_start_date" property="identityCardStartDate"/>
+        <result column="identity_card_end_date" property="identityCardEndDate"/>
+        <result column="contacts_name" property="contactsName"/>
+        <result column="contacts_phone" property="contactsPhone"/>
+        <result column="contacts_identity_card_photos" property="contactsIdentityCardPhotos"/>
+        <collection property="shop" ofType="com.diandian.dubbo.facade.model.shop.ShopInfoModel">
+            <id column="shopId" property="id"/>
+            <result column="create_by" property="createBy"/>
+            <result column="create_time" property="createTime"/>
+            <result column="update_by" property="updateBy"/>
+            <result column="update_time" property="updateTime"/>
+            <result column="classify_id_1" property="classifyId1"/>
+            <result column="classify_id_2" property="classifyId2"/>
+            <result column="referral_code" property="referralCode"/>
+            <result column="remark" property="remark"/>
+            <result column="del_flag" property="delFlag"/>
+            <result column="shop_type_id" property="shopTypeId"/>
+            <result column="type_name" property="shopTypeName"/>
+            <result column="shop_name" property="shopName"/>
+            <result column="introduce" property="introduce"/>
+            <result column="contact_name" property="contactName"/>
+            <result column="contact_phone" property="contactPhone"/>
+            <result column="contact_email" property="contactEmail"/>
+            <result column="contact_qq" property="contactQQ"/>
+            <result column="user_id" property="userId"/>
+            <result column="state" property="state"/>
+            <result column="platform_profit" property="platformProfit"/>
+            <result column="floor_price_proportion" property="floorPriceProportion"/>
+            <result column="agent_profit" property="agentProfit"/>
+        </collection>
+    </resultMap>
+
+    <select id="listPage" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM
+        biz_business_information a
+        LEFT JOIN shop_info b ON a.shop_id = b.id
+        WHERE
+        a.del_flag =0
+        <if test="null!=params.phone and ''!=params.phone">
+            AND a.phone LIKE concat('%',#{params.phone},'%')
+        </if>
+        <if test="null!=params.businessName and ''!=params.businessName">
+            AND a.business_name LIKE concat('%',#{params.businessName},'%')
+        </if>
+    </select>
+
+    <select id="getByShopId" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM
+        biz_business_information a
+        LEFT JOIN shop_info b ON a.shop_id = b.id
+        LEFT JOIN shop_type c ON c.id=b.shop_type_id
+        WHERE
+        b.id=#{shopId}
+    </select>
+
+</mapper>

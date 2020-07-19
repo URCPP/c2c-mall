@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantWeixinMpMaterialMapper">
+
+    <resultMap id="listDTOResultMap" type="com.diandian.dubbo.facade.dto.merchant.MerchantWeixinMpMaterialListDTO">
+        <result column="id" property="id" />
+        <result column="parent_id" property="parentId" />
+        <result column="type" property="type" />
+        <result column="media_id" property="mediaId" />
+        <result column="name" property="name" />
+        <result column="title" property="title" />
+        <result column="url" property="url" />
+        <result column="update_time" property="updateTime" />
+        <collection property="subList" ofType="com.diandian.dubbo.facade.dto.merchant.MerchantWeixinMpMaterialListDTO">
+            <result column="sub_id" property="id" />
+            <result column="sub_parent_id" property="parentId" />
+            <result column="sub_type" property="type" />
+            <result column="sub_media_id" property="mediaId" />
+            <result column="sub_name" property="name" />
+            <result column="sub_title" property="title" />
+            <result column="sub_url" property="url" />
+            <result column="sub_update_time" property="updateTime" />
+        </collection>
+    </resultMap>
+
+    <select id="listForPage" resultMap="listDTOResultMap">
+        SELECT a.id, a.parent_id, a.type, a.media_id, a.name, a.title, a.url, a.update_time,
+        b.id sub_id, b.parent_id sub_parent_id, b.type sub_type, b.media_id sub_media_id, b.name sub_name, b.title sub_title, b.url sub_url, b.update_time sub_update_time
+        FROM (
+            SELECT id, parent_id, type, media_id, name, title, url, update_time
+            FROM merchant_weixin_mp_material
+            WHERE parent_id = 0
+            <if test="params.appId != null and params.appId != ''">
+                AND mp_app_id = #{params.appId, jdbcType=VARCHAR}
+            </if>
+            <if test="params.type != null">
+                AND type = #{params.type, jdbcType=INTEGER}
+            </if>
+        ) a
+        LEFT JOIN merchant_weixin_mp_material b ON a.id = b.parent_id
+    </select>
+</mapper>

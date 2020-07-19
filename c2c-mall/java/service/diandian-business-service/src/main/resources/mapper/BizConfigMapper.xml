@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.BizConfigMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.biz.BizConfigModel">
+        <result column="id" property="id"/>
+        <result column="server_contact" property="serverContact"/>
+        <result column="help_flag" property="helpFlag"/>
+        <result column="official_business_license_pic" property="officialBusinessLicensePic"/>
+        <result column="app_url" property="appUrl"/>
+        <result column="exchange_mall_url" property="exchangeMallUrl"/>
+        <result column="margin_amount" property="marginAmount"/>
+        <result column="mall_open_fee" property="mallOpenFee"/>
+        <result column="official_tel" property="officialTel"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+</mapper>

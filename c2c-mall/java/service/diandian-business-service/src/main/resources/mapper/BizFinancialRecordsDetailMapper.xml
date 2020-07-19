@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.BizFinancialRecordsDetailMapper">
+    <select id="getByShopId" resultType="java.util.Map">
+    SELECT
+	SUM( money ) 'money',
+	create_time 'createTime',
+	COUNT(create_time) 'count'
+    FROM
+	biz_financial_records_detail
+    WHERE
+	DATE_FORMAT( create_time, "%Y-%m-%d" )= DATE_FORMAT( #{date}, "%Y-%m-%d" )
+	AND shop_id=#{shopId}
+	AND `type`=#{type}
+    GROUP BY
+	DATE_FORMAT( create_time, "%Y-%m-%d" )
+    </select>
+
+    <select id="getUnissuedByCreateTime"
+            resultType="com.diandian.dubbo.facade.model.biz.BizFinancialRecordsDetailModel">
+	SELECT
+	*
+	FROM
+	biz_financial_records_detail
+	WHERE
+	del_flag = 0
+	AND state = 1
+	AND DATE_FORMAT( create_time, '%Y-%m-%d' ) <![CDATA[ <= ]]> DATE_FORMAT(DATE_SUB( NOW(), INTERVAL 1 DAY ),'%Y-%m-%d')
+	</select>
+</mapper>

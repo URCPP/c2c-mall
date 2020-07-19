@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.BizCategorySetMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.biz.BizCategorySetModel">
+        <result column="id" property="id"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="category_type_flag" property="categoryTypeFlag"/>
+        <result column="parent_category_id" property="parentCategoryId"/>
+        <result column="sort" property="sort"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="IntactTreeVOMap" type="com.diandian.dubbo.facade.vo.IntactTreeVO">
+        <result column="id" property="id"/>
+        <result column="category_name" property="name"/>
+        <result column="parent_category_id" property="parentId"/>
+    </resultMap>
+
+    <select id="listOneCategory" resultType="com.diandian.dubbo.facade.vo.BizCategorySetVO">
+        SELECT
+        c.id,
+        c.category_name,
+        c.parent_category_id
+        FROM
+        biz_category_set AS c
+        WHERE
+        c.category_type_flag = 0
+    </select>
+
+    <select id="listTwoCategory" resultType="com.diandian.dubbo.facade.vo.BizCategorySetVO"
+    parameterType="java.lang.Long">
+        SELECT
+        c.id,
+        c.category_name,
+        c.parent_category_id
+        FROM
+        biz_category_set AS c
+        WHERE 1=1
+        <if test="parentCategoryId !=null and parentCategoryId !=''">
+           AND c.parent_category_id = #{parentCategoryId}
+        </if>
+    </select>
+
+    <select id="getIntactTreeList" resultMap="IntactTreeVOMap">
+        SELECT id, category_name, parent_category_id FROM biz_category_set
+        ORDER BY category_type_flag ASC, sort ASC
+    </select>
+
+    <select id="listPage" resultType="com.diandian.dubbo.facade.vo.BizCategorySetListVO">
+        SELECT
+        a.id,
+        a.category_name ,
+        a.category_type_flag,
+        a.parent_category_id,
+        a.sort,
+        a.create_time,
+        b.category_name  AS parentCategoryName
+        FROM
+        biz_category_set a LEFT JOIN
+        biz_category_set b
+        ON
+        a.parent_category_id
+        = b.id
+        WHERE 1=1
+        <if test="params.parentCategoryId !=null and params.parentCategoryId !=''">
+            AND a.parent_category_id = #{params.parentCategoryId}
+        </if>
+
+        <if test="params.categoryName !=null and params.categoryName !=''">
+            AND a.category_name LIKE CONCAT("%",#{params.categoryName},"%")
+        </if>
+        ORDER BY  a.id  ASC
+    </select>
+</mapper>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.diandian.dubbo.product.mapper.OrderExpressInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.order.OrderExpressInfoModel">
+        <id column="id" property="id" />
+        <result column="state" property="state" />
+        <result column="context" property="context" />
+        <result column="time" property="time" />
+        <result column="ftime" property="ftime" />
+        <result column="status" property="status" />
+        <result column="area_code" property="areaCode" />
+        <result column="area_name" property="areaName" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <resultMap id="dtoResultMap" type="com.diandian.dubbo.facade.dto.order.OrderExpressInfoDTO">
+        <result column="context" property="context" />
+        <result column="time" property="time" />
+        <result column="ftime" property="ftime" />
+        <result column="status" property="status" />
+        <result column="area_code" property="areaCode" />
+        <result column="area_name" property="areaName" />
+    </resultMap>
+
+    <resultMap id="apiDTOResultMap" type="com.diandian.dubbo.facade.dto.api.result.ExpressInfoListResultDTO">
+        <result column="order_no" property="orderNo" />
+        <result column="state" property="orderStatus" />
+        <result column="transport_company_name" property="transportCompany" />
+        <result column="transport_name" property="transportName" />
+        <result column="transport_no" property="transportNo" />
+        <collection property="list" ofType="com.diandian.dubbo.facade.dto.api.result.ExpressInfoListResultDTO$ExpressInfo">
+            <result column="b_state" property="state" />
+            <result column="context" property="context" />
+            <result column="ftime" property="time" />
+        </collection>
+    </resultMap>
+
+    <resultMap id="voResultMap" type="com.diandian.dubbo.facade.vo.order.OrderDetailExpressInfoVO">
+        <result column="transport_no" property="transportNo"></result>
+        <collection property="list" ofType="com.diandian.dubbo.facade.vo.order.OrderDetailExpressInfoVO$ExpressInfo">
+            <result column="context" property="context" />
+            <result column="ftime" property="time" />
+        </collection>
+    </resultMap>
+
+    <select id="listByTransportNo" parameterType="java.lang.String" resultMap="dtoResultMap">
+        SELECT
+        context,
+        time,
+        ftime,
+        status,
+        area_code,
+        area_name
+        FROM order_express_info
+        WHERE transport_no = #{transportNo, jdbcType=VARCHAR}
+    </select>
+
+    <select id="apiGetExpressInfo" parameterType="com.diandian.dubbo.facade.dto.api.query.GetExpressInfoListDTO" resultMap="apiDTOResultMap">
+        SELECT
+        a.order_no,
+        a.state,
+        a.transport_company_name,
+        a.transport_name,
+        a.transport_no,
+        b.state b_state,
+        b.context,
+        b.ftime
+        FROM order_info oi LEFT JOIN order_detail a ON oi.order_no = a.order_no
+        LEFT JOIN order_express_info b ON a.id = b.order_detail_id
+        WHERE oi.mch_order_no = #{dto.mchOrderNo, jdbcType=VARCHAR} AND b.transport_no = #{dto.transportNo, jdbcType=VARCHAR}
+    </select>
+
+    <select id="getOrderDetailExpressInfo" parameterType="java.lang.Long" resultMap="voResultMap">
+        SELECT
+        a.transport_no,
+        b.ftime,
+        b.context
+        FROM order_detail_transport a LEFT JOIN order_express_info b ON (a.transport_no = b.transport_no AND a.transport_code = b.transport_code)
+        WHERE a.order_detail_id = #{orderDetailId, jdbcType=BIGINT}
+        ORDER BY b.ftime DESC
+    </select>
+</mapper>

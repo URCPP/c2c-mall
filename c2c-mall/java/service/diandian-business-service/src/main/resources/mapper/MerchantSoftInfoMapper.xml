@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantSoftInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.merchant.MerchantSoftInfoModel">
+        <result column="id" property="id"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="soft_type_id" property="softTypeId"/>
+        <result column="available_open_num" property="availableOpenNum"/>
+        <result column="open_num" property="openNum"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <resultMap id="dtoResultMap" type="com.diandian.dubbo.facade.dto.merchant.MerchantSoftInfoDTO">
+        <result column="soft_type_id" property="softTypeId"/>
+        <result column="available_open_num" property="availableOpenNum"/>
+    </resultMap>
+    <select id="listByMerchantId" resultType="com.diandian.dubbo.facade.vo.merchant.MerchantSoftInfoVO"
+            parameterType="java.lang.Long">
+        SELECT
+        i.id,
+        i.merchant_id,
+        s.id AS soft_type_id,
+        IFNULL(i.available_open_num,0) AS available_open_num,
+        IFNULL(i.open_num,0) AS open_num,
+        s.type_name
+        FROM
+        biz_software_type AS s LEFT JOIN
+        (SELECT id, merchant_id, soft_type_id, available_open_num,open_num FROM merchant_soft_info
+        WHERE 1=1
+        <if test="merchantId!=null and merchantId!=''">
+            and merchant_id =#{merchantId}
+        </if>
+        ) AS i
+        ON s.id = i.soft_type_id
+        WHERE
+        s.del_flag = 0
+
+    </select>
+
+    <select id="queryMerchantSoftInfo" resultMap="dtoResultMap">
+        SELECT
+        soft_type_id,
+        available_open_num
+        FROM merchant_soft_info
+        WHERE merchant_id = #{merchantId, jdbcType=BIGINT}
+    </select>
+</mapper>

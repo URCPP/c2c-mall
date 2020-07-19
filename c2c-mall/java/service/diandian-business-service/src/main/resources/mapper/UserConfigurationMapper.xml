@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.diandian.dubbo.business.mapper.user.UserConfigurationMapper">
+  <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.user.UserConfiguration">
+    <!--@mbg.generated-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="platform_name" jdbcType="VARCHAR" property="platformName" />
+    <result column="platform_logo" jdbcType="VARCHAR" property="platformLogo" />
+    <result column="customer_phone" jdbcType="VARCHAR" property="customerPhone" />
+    <result column="customer_qq_online" jdbcType="VARCHAR" property="customerQqOnline" />
+    <result column="min_withdrawal" jdbcType="DECIMAL" property="minWithdrawal" />
+    <result column="min_withdrawal_multiple" jdbcType="DECIMAL" property="minWithdrawalMultiple" />
+    <result column="commission_charge_min" jdbcType="DECIMAL" property="commissionChargeMin" />
+    <result column="commission charge_max" jdbcType="DECIMAL" property="commissionChargeMax" />
+    <result column="commission_min_money" jdbcType="DECIMAL" property="commissionMinMoney" />
+    <result column="commission_max_money" jdbcType="DECIMAL" property="commissionMaxMoney" />
+    <result column="freeze_commission" jdbcType="DECIMAL" property="freezeCommission" />
+    <result column="Immediate_consumption" jdbcType="DECIMAL" property="immediateConsumption" />
+    <result column="Immediate_sales" jdbcType="DECIMAL" property="immediateSales" />
+    <result column="junior_partner_income" jdbcType="DECIMAL" property="juniorPartnerIncome" />
+    <result column="direct_member" jdbcType="DECIMAL" property="directMember" />
+    <result column="direct_member_upgrade" jdbcType="DECIMAL" property="directMemberUpgrade" />
+    <result column="
+upgrade_merchant" jdbcType="DECIMAL" property="
+upgradeMerchant" />
+    <result column="upgrade_partner" jdbcType="DECIMAL" property="upgradePartner" />
+    <result column="sales_service_money" jdbcType="DECIMAL" property="salesServiceMoney" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, platform_name, platform_logo, customer_phone, customer_qq_online, min_withdrawal, 
+    min_withdrawal_multiple, commission_charge_min, `commission charge_max`, commission_min_money, 
+    commission_max_money, freeze_commission, Immediate_consumption, Immediate_sales, 
+    junior_partner_income, direct_member, direct_member_upgrade, 
+upgrade_merchant, 
+    upgrade_partner, sales_service_money
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from user_configuration
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from user_configuration
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.diandian.dubbo.facade.model.user.UserConfiguration" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into user_configuration (platform_name, platform_logo, customer_phone, 
+      customer_qq_online, min_withdrawal, min_withdrawal_multiple, 
+      commission_charge_min, `commission charge_max`, 
+      commission_min_money, commission_max_money, 
+      freeze_commission, Immediate_consumption, 
+      Immediate_sales, junior_partner_income, direct_member, 
+      direct_member_upgrade, 
+upgrade_merchant, 
+      upgrade_partner, sales_service_money)
+    values (#{platformName,jdbcType=VARCHAR}, #{platformLogo,jdbcType=VARCHAR}, #{customerPhone,jdbcType=VARCHAR}, 
+      #{customerQqOnline,jdbcType=VARCHAR}, #{minWithdrawal,jdbcType=DECIMAL}, #{minWithdrawalMultiple,jdbcType=DECIMAL}, 
+      #{commissionChargeMin,jdbcType=DECIMAL}, #{commissionChargeMax,jdbcType=DECIMAL}, 
+      #{commissionMinMoney,jdbcType=DECIMAL}, #{commissionMaxMoney,jdbcType=DECIMAL}, 
+      #{freezeCommission,jdbcType=DECIMAL}, #{immediateConsumption,jdbcType=DECIMAL}, 
+      #{immediateSales,jdbcType=DECIMAL}, #{juniorPartnerIncome,jdbcType=DECIMAL}, #{directMember,jdbcType=DECIMAL}, 
+      #{directMemberUpgrade,jdbcType=DECIMAL}, #{
+upgradeMerchant,jdbcType=DECIMAL}, 
+      #{upgradePartner,jdbcType=DECIMAL}, #{salesServiceMoney,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.diandian.dubbo.facade.model.user.UserConfiguration" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into user_configuration
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="platformName != null">
+        platform_name,
+      </if>
+      <if test="platformLogo != null">
+        platform_logo,
+      </if>
+      <if test="customerPhone != null">
+        customer_phone,
+      </if>
+      <if test="customerQqOnline != null">
+        customer_qq_online,
+      </if>
+      <if test="minWithdrawal != null">
+        min_withdrawal,
+      </if>
+      <if test="minWithdrawalMultiple != null">
+        min_withdrawal_multiple,
+      </if>
+      <if test="commissionChargeMin != null">
+        commission_charge_min,
+      </if>
+      <if test="commissionChargeMax != null">
+        `commission charge_max`,
+      </if>
+      <if test="commissionMinMoney != null">
+        commission_min_money,
+      </if>
+      <if test="commissionMaxMoney != null">
+        commission_max_money,
+      </if>
+      <if test="freezeCommission != null">
+        freeze_commission,
+      </if>
+      <if test="immediateConsumption != null">
+        Immediate_consumption,
+      </if>
+      <if test="immediateSales != null">
+        Immediate_sales,
+      </if>
+      <if test="juniorPartnerIncome != null">
+        junior_partner_income,
+      </if>
+      <if test="directMember != null">
+        direct_member,
+      </if>
+      <if test="directMemberUpgrade != null">
+        direct_member_upgrade,
+      </if>
+      <if test="
+upgradeMerchant != null">
+        
+upgrade_merchant,
+      </if>
+      <if test="upgradePartner != null">
+        upgrade_partner,
+      </if>
+      <if test="salesServiceMoney != null">
+        sales_service_money,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="platformName != null">
+        #{platformName,jdbcType=VARCHAR},
+      </if>
+      <if test="platformLogo != null">
+        #{platformLogo,jdbcType=VARCHAR},
+      </if>
+      <if test="customerPhone != null">
+        #{customerPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="customerQqOnline != null">
+        #{customerQqOnline,jdbcType=VARCHAR},
+      </if>
+      <if test="minWithdrawal != null">
+        #{minWithdrawal,jdbcType=DECIMAL},
+      </if>
+      <if test="minWithdrawalMultiple != null">
+        #{minWithdrawalMultiple,jdbcType=DECIMAL},
+      </if>
+      <if test="commissionChargeMin != null">
+        #{commissionChargeMin,jdbcType=DECIMAL},
+      </if>
+      <if test="commissionChargeMax != null">
+        #{commissionChargeMax,jdbcType=DECIMAL},
+      </if>
+      <if test="commissionMinMoney != null">
+        #{commissionMinMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="commissionMaxMoney != null">
+        #{commissionMaxMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="freezeCommission != null">
+        #{freezeCommission,jdbcType=DECIMAL},
+      </if>
+      <if test="immediateConsumption != null">
+        #{immediateConsumption,jdbcType=DECIMAL},
+      </if>
+      <if test="immediateSales != null">
+        #{immediateSales,jdbcType=DECIMAL},
+      </if>
+      <if test="juniorPartnerIncome != null">
+        #{juniorPartnerIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="directMember != null">
+        #{directMember,jdbcType=DECIMAL},
+      </if>
+      <if test="directMemberUpgrade != null">
+        #{directMemberUpgrade,jdbcType=DECIMAL},
+      </if>
+      <if test="
+upgradeMerchant != null">
+        #{
+upgradeMerchant,jdbcType=DECIMAL},
+      </if>
+      <if test="upgradePartner != null">
+        #{upgradePartner,jdbcType=DECIMAL},
+      </if>
+      <if test="salesServiceMoney != null">
+        #{salesServiceMoney,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.diandian.dubbo.facade.model.user.UserConfiguration">
+    <!--@mbg.generated-->
+    update user_configuration
+    <set>
+      <if test="platformName != null">
+        platform_name = #{platformName,jdbcType=VARCHAR},
+      </if>
+      <if test="platformLogo != null">
+        platform_logo = #{platformLogo,jdbcType=VARCHAR},
+      </if>
+      <if test="customerPhone != null">
+        customer_phone = #{customerPhone,jdbcType=VARCHAR},
+      </if>
+      <if test="customerQqOnline != null">
+        customer_qq_online = #{customerQqOnline,jdbcType=VARCHAR},
+      </if>
+      <if test="minWithdrawal != null">
+        min_withdrawal = #{minWithdrawal,jdbcType=DECIMAL},
+      </if>
+      <if test="minWithdrawalMultiple != null">
+        min_withdrawal_multiple = #{minWithdrawalMultiple,jdbcType=DECIMAL},
+      </if>
+      <if test="commissionChargeMin != null">
+        commission_charge_min = #{commissionChargeMin,jdbcType=DECIMAL},
+      </if>
+      <if test="commissionChargeMax != null">
+        `commission charge_max` = #{commissionChargeMax,jdbcType=DECIMAL},
+      </if>
+      <if test="commissionMinMoney != null">
+        commission_min_money = #{commissionMinMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="commissionMaxMoney != null">
+        commission_max_money = #{commissionMaxMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="freezeCommission != null">
+        freeze_commission = #{freezeCommission,jdbcType=DECIMAL},
+      </if>
+      <if test="immediateConsumption != null">
+        Immediate_consumption = #{immediateConsumption,jdbcType=DECIMAL},
+      </if>
+      <if test="immediateSales != null">
+        Immediate_sales = #{immediateSales,jdbcType=DECIMAL},
+      </if>
+      <if test="juniorPartnerIncome != null">
+        junior_partner_income = #{juniorPartnerIncome,jdbcType=DECIMAL},
+      </if>
+      <if test="directMember != null">
+        direct_member = #{directMember,jdbcType=DECIMAL},
+      </if>
+      <if test="directMemberUpgrade != null">
+        direct_member_upgrade = #{directMemberUpgrade,jdbcType=DECIMAL},
+      </if>
+      <if test="
+upgradeMerchant != null">
+        
+upgrade_merchant = #{
+upgradeMerchant,jdbcType=DECIMAL},
+      </if>
+      <if test="upgradePartner != null">
+        upgrade_partner = #{upgradePartner,jdbcType=DECIMAL},
+      </if>
+      <if test="salesServiceMoney != null">
+        sales_service_money = #{salesServiceMoney,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.diandian.dubbo.facade.model.user.UserConfiguration">
+    <!--@mbg.generated-->
+    update user_configuration
+    set platform_name = #{platformName,jdbcType=VARCHAR},
+      platform_logo = #{platformLogo,jdbcType=VARCHAR},
+      customer_phone = #{customerPhone,jdbcType=VARCHAR},
+      customer_qq_online = #{customerQqOnline,jdbcType=VARCHAR},
+      min_withdrawal = #{minWithdrawal,jdbcType=DECIMAL},
+      min_withdrawal_multiple = #{minWithdrawalMultiple,jdbcType=DECIMAL},
+      commission_charge_min = #{commissionChargeMin,jdbcType=DECIMAL},
+      `commission charge_max` = #{commissionChargeMax,jdbcType=DECIMAL},
+      commission_min_money = #{commissionMinMoney,jdbcType=DECIMAL},
+      commission_max_money = #{commissionMaxMoney,jdbcType=DECIMAL},
+      freeze_commission = #{freezeCommission,jdbcType=DECIMAL},
+      Immediate_consumption = #{immediateConsumption,jdbcType=DECIMAL},
+      Immediate_sales = #{immediateSales,jdbcType=DECIMAL},
+      junior_partner_income = #{juniorPartnerIncome,jdbcType=DECIMAL},
+      direct_member = #{directMember,jdbcType=DECIMAL},
+      direct_member_upgrade = #{directMemberUpgrade,jdbcType=DECIMAL},
+      
+upgrade_merchant = #{
+upgradeMerchant,jdbcType=DECIMAL},
+      upgrade_partner = #{upgradePartner,jdbcType=DECIMAL},
+      sales_service_money = #{salesServiceMoney,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="listHelpPage" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+    select * from user_configuration
+  </select>
+  <select id="findAll" resultMap="BaseResultMap">
+    select * from user_configuration
+  </select>
+</mapper>

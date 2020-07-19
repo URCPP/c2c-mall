@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.product.mapper.OrderAfterSaleApplyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.order.OrderAfterSaleApplyModel">
+        <result column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="order_detail_id" property="orderDetailId"/>
+        <result column="shop_id" property="shopId"/>
+        <result column="shop_name" property="shopName"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="merchant_name" property="merchantName"/>
+        <result column="reason" property="reason"/>
+        <result column="introduce" property="introduce"/>
+        <result column="image_urls" property="imageUrls"/>
+        <result column="after_sale_type" property="afterSaleType"/>
+        <result column="state" property="state"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="listOrderAfterSale" resultType="com.diandian.dubbo.facade.dto.order.OrderAfterSaleApplyDTO">
+        SELECT
+            s.order_no,
+            s.image_urls,
+            s.after_sale_type,
+            s.state,
+            d.id,
+            d.sku_id,
+            d.sku_name,
+            d.spec_info,
+            d.repository_id,
+            d.repository_name,
+            d.price,
+            d.num,
+            d.after_sale_flag,
+            d.service_fee,
+            d.recv_name,
+            d.recv_phone,
+            d.recv_address,
+            d.recv_post_code,
+            d.transport_no,
+            d.transport_fee,
+            d.transport_id,
+            d.transport_name,
+            d.transport_company_id,
+            d.transport_company_name,
+            d.share_flag,
+            d.remark,
+            d.create_time
+        FROM
+            order_after_sale_apply AS s ,
+            order_detail AS d
+        WHERE  s.order_detail_id = d.id
+        <if test="params.merchantId != null">
+            and s.merchant_id = #{params.merchantId}
+        </if>
+        <if test="params.afterSaleFlag != null and params.afterSaleFlag != ''">
+            and d.after_sale_flag = #{params.afterSaleFlag}
+        </if>
+
+    </select>
+
+</mapper>

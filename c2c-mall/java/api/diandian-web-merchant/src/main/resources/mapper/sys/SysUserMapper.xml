@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.diandian.admin.merchant.modules.sys.mapper.SysUserMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="userResultMap" type="com.diandian.admin.model.sys.SysUserModel">
+        <id column="uid" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="phone" property="phone"/>
+        <result column="avatar" property="avatar"/>
+        <result column="salt" property="salt"/>
+        <result column="ustate" property="state"/>
+        <result column="orgId" property="orgId"/>
+        <result column="orgName" property="orgName"/>
+        <result column="ucreate_time" property="createTime"/>
+        <result column="uupdate_time" property="updateTime"/>
+        <result column="del_flag" property="delFlag"/>
+    </resultMap>
+
+
+    <select id="getByUsername" resultType="com.diandian.admin.model.sys.SysUserModel">
+		select * from sys_user where username = #{username}
+	</select>
+
+
+    <select id="getById" resultMap="userResultMap">
+         SELECT
+            u.id AS uid,
+            u.username,
+            u.`password`,
+            u.salt,
+            u.phone,
+            u.avatar,
+            u.state AS ustate,
+            u.create_time AS ucreate_time,
+            u.update_time AS uupdate_time,
+            u.del_flag AS udel_flag,
+            r.id AS rid,
+            r.role_name,
+            r.remark AS rremark,
+            r.create_time AS rcreate_time,
+            r.update_time AS rupdate_time,
+            o.org_name AS orgName,
+            o.id AS orgId
+            FROM
+            sys_user AS u
+            LEFT JOIN sys_user_role AS ur ON ur.user_id = u.id
+            LEFT JOIN sys_role AS r ON r.id = ur.role_id
+            LEFT JOIN sys_org AS o ON o.id = u.org_id
+        WHERE
+           u.id = #{id}
+    </select>
+    <select id="listAllPermsByUserId" resultType="java.lang.String">
+        select m.perms from sys_user_role ur
+			LEFT JOIN sys_role_menu rm on ur.role_id = rm.role_id
+			LEFT JOIN sys_menu m on rm.menu_id = m.id
+		where ur.user_id = #{userId}
+    </select>
+
+    <select id="listAllMenuIdByUserId" resultType="long">
+		select distinct rm.menu_id from sys_user_role ur
+			LEFT JOIN sys_role_menu rm on ur.role_id = rm.role_id
+		where ur.user_id = #{userId}
+	</select>
+
+</mapper>

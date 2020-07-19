@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.product.mapper.ProductAdMapper">
+	<resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.product.ProductAdModel">
+		<result column="id" property="id"/>
+		<result column="ad_type" property="adType"/>
+		<result column="ad_name" property="adName"/>
+		<result column="introduce" property="introduce"/>
+		<result column="image_url" property="imageUrl"/>
+		<result column="product_id" property="productId"/>
+		<result column="link_type" property="linkType"/>
+		<result column="link_name" property="linkName"/>
+		<result column="sort" property="sort"/>
+		<result column="state" property="state"/>
+		<result column="create_time" property="createTime"/>
+		<result column="update_time" property="updateTime"/>
+		<result column="crate_by" property="createBy"/>
+		<result column="shareImg" property="shareImg"/>
+		<result column="subtitle" property="introduce"/>
+		<collection property="skuList" ofType="com.diandian.dubbo.facade.model.product.ProductSkuModel">
+			<id column="skuId" property="id"/>
+			<result column="product_id" property="productId"/>
+			<result column="sshopId" property="shopId"/>
+			<result column="sku_name" property="skuName"/>
+			<result column="spec_name1" property="specName1"/>
+			<result column="spec_value1" property="specValue1"/>
+			<result column="sCreateTime" property="createTime"/>
+			<result column="sUpdateTime" property="updateTime"/>
+			<result column="sDelFlag" property="delFlag"/>
+			<collection property="priceList" ofType="com.diandian.dubbo.facade.model.product.ProductSkuPriceModel">
+				<result column="priceId" property="id"/>
+				<result column="pSkuId" property="skuId"/>
+				<result column="software_type_id" property="softwareTypeId"/>
+				<result column="software_type_name" property="softwareTypeName"/>
+				<result column="pExchangeIntegral" property="exchangeIntegral"/>
+				<result column="pPrice" property="price"/>
+				<result column="pCreateTime" property="createTime"/>
+				<result column="pUpdateTime" property="updateTime"/>
+			</collection>
+			<collection property="stockList" ofType="com.diandian.dubbo.facade.model.product.ProductSkuStockModel">
+				<result column="stockId" property="id"/>
+				<result column="repository_id" property="repositoryId"/>
+				<result column="repository_name" property="repositoryName"/>
+				<result column="stockSkuId" property="skuId"/>
+				<result column="stock" property="stock"/>
+				<result column="stockCreateTime" property="createTime"/>
+				<result column="stockUpdateTime" property="updateTime"/>
+			</collection>
+		</collection>
+	</resultMap>
+
+    <select id="getProductAd" resultMap="BaseResultMap">
+        SELECT
+	a.*,
+		b.image_urls AS shareImg,b.introduce as subtitle,
+		c.id AS skuId,c.shop_id AS sshopId,c.product_id,c.sku_name,c.spec_name1,c.spec_value1,c.create_time AS sCreateTime,c.update_time AS sUpdateTime,c.del_flag AS
+		sDelFlag,
+		d.id AS priceId,d.sku_id AS pSkuId,d.software_type_id,d.software_type_name,d.exchange_integral AS pExchangeIntegral,
+		d.price AS pPrice,d.create_time AS pCreateTime, d.update_time AS pUpdateTime,
+		e.id AS stockId,e.repository_id,e.repository_name,e.sku_id AS stockSkuId,e.stock,e.create_time AS stockCreateTime,e.update_time AS stockUpdateTime
+	FROM
+	product_ad a
+	LEFT JOIN product_info b ON b.id = a.product_id
+	LEFT JOIN product_sku c ON c.product_id = b.id
+	LEFT JOIN product_sku_price d ON d.sku_id = c.id
+	LEFT JOIN product_sku_stock e ON e.sku_id=c.id
+	WHERE b.del_flag=0 and a.state=0
+	<if test="params.type!=null and params.type!=''">
+		AND a.ad_type=#{params.type}
+	</if>
+	order by a.sort
+    </select>
+</mapper>

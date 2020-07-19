@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.member.MemberMerchantRelationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.member.MemberMerchantRelationModel">
+        <result column="id" property="id"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="merchant_login_name" property="merchantLoginName"/>
+        <result column="member_id" property="memberId"/>
+        <result column="member_login_name" property="memberLoginName"/>
+        <result column="avail_balance" property="availBalance"/>
+        <result column="freeze_balance" property="freezeBalance"/>
+        <result column="exchange_coupon_num" property="exchangeCouponNum"/>
+        <result column="exchange_coupon_sum" property="exchangeCouponSum"/>
+        <result column="shopping_coupon_amount" property="shoppingCouponAmount"/>
+        <result column="shopping_coupon_sum" property="shoppingCouponSum"/>
+        <result column="consume_times_sum" property="consumeTimesSum"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 会员统计 -->
+    <select id="listMemberInfo" parameterType="java.util.Map"
+            resultType="com.diandian.dubbo.facade.model.member.MemberMerchantRelationModel">
+        SELECT
+        id
+        FROM member_merchant_relation
+        WHERE 1=1
+        <if test="merchantId != null">
+            and merchant_id = #{merchantId}
+        </if>
+
+        <if test="date != null and date != '' ">
+            and DATE_FORMAT(create_time,'%Y-%m-%d') = #{date}
+        </if>
+
+        <if test="month != null and month != '' ">
+            and DATE_FORMAT(create_time,'%Y-%m') = #{month}
+        </if>
+        <if test="year != null and year != '' ">
+            and DATE_FORMAT(create_time,'%Y') = #{year}
+        </if>
+
+
+    </select>
+
+    <select id="getMemberExchange" resultType="java.lang.Integer">
+        SELECT exchange_coupon_num FROM member_merchant_relation
+        WHERE merchant_id = #{mchId, jdbcType=BIGINT} AND member_id = #{mbId, jdbcType=BIGINT}
+    </select>
+
+</mapper>

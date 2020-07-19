@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://dubbo.apache.org/schema/dubbo" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans        http://www.springframework.org/schema/beans/spring-beans-4.3.xsd        http://dubbo.apache.org/schema/dubbo        http://dubbo.apache.org/schema/dubbo/dubbo.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:dubbo.properties"/>
+
+    <!-- 消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 -->
+    <dubbo:application name="diandian-admin"/>
+
+
+    <!-- 使用zookeeper注册中心暴露服务地址 -->
+    <dubbo:registry client="curator" protocol="zookeeper" address="${zk.address}"/>
+
+    <!-- 生成远程服务代理，可以和本地bean一样使用demoService -->
+    <dubbo:reference id="productCategoryService"
+                     interface="com.diandian.dubbo.facade.service.product.ProductCategoryService" retries="0"
+                     check="false"/>
+    <dubbo:reference id="productClassifyService"
+                     interface="com.diandian.dubbo.facade.service.product.ProductClassifyService" retries="0"
+                     check="false"/>
+    <dubbo:reference id="productAttrNameService"
+                     interface="com.diandian.dubbo.facade.service.product.ProductAttrNameService" retries="0"
+                     check="false"/>
+    <dubbo:reference id="productInfoService" interface="com.diandian.dubbo.facade.service.product.ProductInfoService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="productSkuPriceService" interface="com.diandian.dubbo.facade.service.product.ProductSkuPriceService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="productSkuService" interface="com.diandian.dubbo.facade.service.product.ProductSkuService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="bizOrgTypeStrategyService"
+                     interface="com.diandian.dubbo.facade.service.biz.BizOrgTypeStrategyService" retries="0"
+                     check="false"/>
+    <dubbo:reference id="bizSoftwareTypeService"
+                     interface="com.diandian.dubbo.facade.service.biz.BizSoftwareTypeService" retries="0"
+                     check="false"/>
+    <dubbo:reference id="shopInfoService"
+                     interface="com.diandian.dubbo.facade.service.shop.ShopInfoService" retries="0"
+                     check="false"/>
+    <dubbo:reference id="bizSoftwareTypeStrategyService"
+                     interface="com.diandian.dubbo.facade.service.biz.BizSoftwareTypeStrategyService" retries="0"
+                     check="false"/>
+    <dubbo:reference id="resGroupService" interface="com.diandian.dubbo.facade.service.res.ResGroupService" retries="0"
+                     check="false"/>
+    <dubbo:reference id="resOssService" interface="com.diandian.dubbo.facade.service.res.ResOssService" retries="0"
+                     check="false"/>
+    <dubbo:reference id="bizAccountService" interface="com.diandian.dubbo.facade.service.biz.BizAccountService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="bizAccountDetailService"
+                     interface="com.diandian.dubbo.facade.service.biz.BizAccountDetailService" retries="0"
+                     check="false"/>
+    <dubbo:reference id="bizBonusDetailService" interface="com.diandian.dubbo.facade.service.biz.BizBonusDetailService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="noGenerator" interface="com.diandian.dubbo.facade.service.support.NoGenerator" retries="0"
+                     check="false"/>
+    <dubbo:reference id="orderInfoService" interface="com.diandian.dubbo.facade.service.order.OrderInfoService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="orderDetailService" interface="com.diandian.dubbo.facade.service.order.OrderDetailService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="bizOrgPrivilegeService"
+                     interface="com.diandian.dubbo.facade.service.biz.BizOrgPrivilegeService" retries="0"
+                     check="false"/>
+    <dubbo:reference id="repositoryInfoService"
+                     interface="com.diandian.dubbo.facade.service.repository.RepositoryInfoService" retries="0"
+                     check="false"/>
+    <dubbo:reference id="bizOrgApplyService" interface="com.diandian.dubbo.facade.service.biz.BizOrgApplyService" retries="0" check="false"/>
+    <dubbo:reference id="sysOrgService" interface="com.diandian.dubbo.facade.service.sys.SysOrgService" retries="0" check="false"/>
+    <dubbo:reference id="sysOrgTypeService" interface="com.diandian.dubbo.facade.service.sys.SysOrgTypeService" retries="0" check="false"/>
+    <dubbo:reference id="sysOrgTypeMenuService" interface="com.diandian.dubbo.facade.service.sys.SysOrgTypeMenuService" retries="0" check="false"/>
+    <dubbo:reference id="merchantInfoService" interface="com.diandian.dubbo.facade.service.merchant.MerchantInfoService" retries="0" check="false" validation="true"/>
+    <dubbo:reference id="bizCommissionDetailService" interface="com.diandian.dubbo.facade.service.biz.BizCommissionDetailService" retries="0" check="false"/>
+    <dubbo:reference id="bizOrgInfoService" interface="com.diandian.dubbo.facade.service.biz.BizOrgInfoService" retries="0" check="false"/>
+    <dubbo:reference id="merchantOpenApplyLogService" interface="com.diandian.dubbo.facade.service.merchant.MerchantOpenApplyLogService" retries="0" check="false"/>
+    <dubbo:reference id="bizCategorySetService" interface="com.diandian.dubbo.facade.service.biz.BizCategorySetService" retries="0" check="false"/>
+    <dubbo:reference id="bizNotifyInfoService"
+                     interface="com.diandian.dubbo.facade.service.biz.BizNotifyInfoService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="bizMallConfigService" interface="com.diandian.dubbo.facade.service.biz.BizMallConfigService" retries="0" check="false"/>
+    <dubbo:reference id="bizMallHelpService" interface="com.diandian.dubbo.facade.service.biz.BizMallHelpService" retries="0" check="false"/>
+    <dubbo:reference id="productSubjectService" interface="com.diandian.dubbo.facade.service.product.ProductSubjectService" retries="0" check="false"/>
+    <dubbo:reference id="bizMallNewsService" interface="com.diandian.dubbo.facade.service.biz.BizMallNewsService" retries="0" check="false"/>
+    <dubbo:reference id="transportInfoService" interface="com.diandian.dubbo.facade.service.transport.TransportInfoService" retries="0" check="false"/>
+    <dubbo:reference id="bizPayConfigService" interface="com.diandian.dubbo.facade.service.biz.BizPayConfigService" retries="0" check="false"/>
+
+
+    <dubbo:reference id="productAdService" interface="com.diandian.dubbo.facade.service.product.ProductAdService" retries="0" check="false"/>
+    <dubbo:reference id="softInfoService" interface="com.diandian.dubbo.facade.service.merchant.MerchantSoftInfoService" retries="0" check="false"/>
+    <dubbo:reference id="bizMallSuccessCaseService" interface="com.diandian.dubbo.facade.service.biz.BizMallSuccessCaseService" retries="0" check="false"/>
+    <dubbo:reference id="merchantPayfeeRecordService" interface="com.diandian.dubbo.facade.service.merchant.MerchantPayfeeRecordService" retries="0" check="false"/>
+    <dubbo:reference id="orderAfterSaleApplyService"
+                     interface="com.diandian.dubbo.facade.service.order.OrderAfterSaleApplyService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="bizWithdrawalRuleService"
+                     interface="com.diandian.dubbo.facade.service.biz.BizWithdrawalRuleService"
+                     retries="0" check="false"/>
+
+    <dubbo:reference id="bizConfigService"
+                     interface="com.diandian.dubbo.facade.service.biz.BizConfigService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="hotKeywordService"
+                     interface="com.diandian.dubbo.facade.service.biz.HotKeywordService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="merchantAccountInfoService"
+                     interface="com.diandian.dubbo.facade.service.merchant.MerchantAccountInfoService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="userAccountInfoService"
+                     interface="com.diandian.dubbo.facade.service.user.UserAccountInfoService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="userConfigurationService"
+                     interface="com.diandian.dubbo.facade.service.user.UserConfigurationService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="merchantWalletInfoService"
+                     interface="com.diandian.dubbo.facade.service.merchant.MerchantWalletInfoService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="bizOpenDetailService"
+                     interface="com.diandian.dubbo.facade.service.biz.BizOpenDetailService"
+                     retries="0" check="false"/>
+
+    <dubbo:reference id="bizProductShareService"
+                     interface="com.diandian.dubbo.facade.service.biz.BizProductShareService"
+                     retries="0" check="false"/>
+
+    <dubbo:reference id="merchantRemitLogService" interface="com.diandian.dubbo.facade.service.merchant.MerchantRemitLogService" retries="0" check="false"/>
+
+
+    <dubbo:reference id="merchantRecipientsSetService"
+                     interface="com.diandian.dubbo.facade.service.merchant.MerchantRecipientsSetService"
+                     retries="0" check="false"/>
+
+    <dubbo:reference id="merchantShopClassifyService"
+                     interface="com.diandian.dubbo.facade.service.merchant.MerchantShopClassifyService"
+                     retries="0" check="false"/>
+
+    <dubbo:reference id="productBrandService"
+                     interface="com.diandian.dubbo.facade.service.product.ProductBrandService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="sysPlaceRegionService"
+                     interface="com.diandian.dubbo.facade.service.sys.SysPlaceRegionService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="orderExpressInfoService"
+                     interface="com.diandian.dubbo.facade.service.order.OrderExpressInfoService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="bizFinancialRecordsDetailService"
+                     interface="com.diandian.dubbo.facade.service.biz.BizFinancialRecordsDetailService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="userShopRoleService"
+                     interface="com.diandian.dubbo.facade.service.user.UserShopRoleService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="bizBusinessInformationService"
+                     interface="com.diandian.dubbo.facade.service.biz.BizBusinessInformationService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="bizBankCardInformationService"
+                     interface="com.diandian.dubbo.facade.service.biz.BizBankCardInformationService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="bizFinancialRecordsService"
+                     interface="com.diandian.dubbo.facade.service.biz.BizFinancialRecordsService"
+                     retries="0" check="false"/>
+    <dubbo:reference id="bizWithdrawalsRecordService"
+                     interface="com.diandian.dubbo.facade.service.biz.BizWithdrawalsRecordService"
+                     retries="0" check="false"/>
+
+<!--    &lt;!&ndash; 调用代理订单分润结算 &ndash;&gt;-->
+<!--    <dubbo:reference id="bizIdentityService" interface="com.diandian.platform.dubbo.facade.service.biz.BizIdentityService"-->
+<!--                     retries="0" check="false"/>-->
+</beans>

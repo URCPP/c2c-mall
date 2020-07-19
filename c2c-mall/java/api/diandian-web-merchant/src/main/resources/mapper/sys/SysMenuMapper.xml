@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.admin.merchant.modules.sys.mapper.SysMenuMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.diandian.admin.model.sys.SysMenuModel" id="sysMenuMap">
+        <result property="id" column="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="name" column="name"/>
+        <result property="url" column="url"/>
+        <result property="perms" column="perms"/>
+        <result property="type" column="type"/>
+        <result property="icon" column="icon"/>
+        <result property="sort" column="sort"/>
+        <result property="hidden" column="hidden"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="parentName" column="parent_name"/>
+    </resultMap>
+    <select id="listByRoleIdList" parameterType="list" resultMap="sysMenuMap">
+        SELECT
+        m.id,
+        m.name,
+        m.parent_id,
+        m.url,
+        m.perms,
+        m.type,
+        m.icon,
+        m.sort,
+        m.hidden,
+        m.create_time,
+        m.update_time
+        FROM sys_menu m LEFT JOIN sys_role_menu ur ON ur.menu_id = m.id
+        WHERE m.del_flag=0 AND ur.role_id IN
+        <foreach collection="roleIdList" open="(" close=")" separator="," item="roleId">
+            #{roleId}
+        </foreach>
+    </select>
+    <select id="listAllMenu" resultMap="sysMenuMap">
+      SELECT
+        m.id,
+        m.name,
+        m.parent_id,
+        m.url,
+        m.perms,
+        m.type,
+        m.icon,
+        m.sort,
+        m.hidden,
+        m.create_time,
+        m.update_time,
+        (SELECT `name` FROM sys_menu WHERE id = m.parent_id) AS parent_name
+        FROM sys_menu m
+    </select>
+    <select id="getById" resultMap="sysMenuMap">
+        SELECT
+        m.id,
+        m.name,
+        m.parent_id,
+        m.url,
+        m.perms,
+        m.type,
+        m.icon,
+        m.sort,
+        m.hidden,
+        m.create_time,
+        m.update_time,
+        (SELECT `name` FROM sys_menu WHERE id = m.parent_id) AS parent_name
+        FROM sys_menu m
+        WHERE m.id=#{id}
+    </select>
+
+    <select id="listByParentId" resultType="com.diandian.admin.model.sys.SysMenuModel">
+		select * from sys_menu where parent_id = #{parentId} order by sort asc
+	</select>
+    <select id="listNotButton" resultType="com.diandian.admin.model.sys.SysMenuModel">
+        select * from sys_menu where type != 2 order by sort asc
+    </select>
+</mapper>

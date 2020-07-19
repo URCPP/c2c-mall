@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.BizOrgPrivilegeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="orgPrivilegeListVOMap" type="com.diandian.dubbo.facade.vo.OrgPrivilegeListVO">
+        <result column="reward_type_id" property="rewardTypeId"></result>
+        <result column="reward_type_name" property="rewardTypeName"></result>
+        <result column="reward_org_type_id" property="rewardOrgTypeId"></result>
+        <result column="level" property="rewardOrgLevel"></result>
+        <result column="org_type_name" property="rewardOrgTypeName"></result>
+        <result column="reward_software_type_id" property="rewardSoftwareTypeId"></result>
+        <result column="software_type_name" property="rewardSoftwareTypeName"></result>
+        <result column="reward_value" property="rewardValue"></result>
+    </resultMap>
+
+    <resultMap id="orgAllTypePrivilegeMap" type="com.diandian.dubbo.facade.dto.biz.OrgPrivilegeDTO">
+        <result column="reward_type_id" property="rewardTypeId"></result>
+        <result column="reward_type_name" property="rewardTypeName"></result>
+        <result column="reward_org_type_id" property="rewardOrgTypeId"></result>
+        <result column="reward_software_type_id" property="rewardSoftwareTypeId"></result>
+        <result column="reward_value" property="rewardValue"></result>
+    </resultMap>
+
+    <select id="queryOrgPrivilegeListVO" parameterType="com.diandian.dubbo.facade.dto.biz.OrgPrivilegeQueryDTO" resultMap="orgPrivilegeListVOMap">
+        SELECT
+        a.reward_type_id,
+        a.reward_type_name,
+        a.reward_org_type_id,
+        a.reward_software_type_id,
+        a.reward_value,
+        b.type_name AS org_type_name,
+        b.level,
+        c.type_name AS software_type_name
+        FROM biz_org_privilege a LEFT JOIN sys_org_type b ON a.reward_org_type_id = b.id AND a.reward_type_id = 0
+        LEFT JOIN biz_software_type c ON a.reward_software_type_id = c.id AND a.reward_type_id = 1
+        WHERE 1 = 1
+        <if test="dto.orgId != null and dto.orgId != 0">
+            AND a.org_id = #{dto.orgId, jdbcType=BIGINT}
+        </if>
+        <if test="dto.rewardTypeId != null">
+            AND a.reward_type_id = #{dto.rewardTypeId, jdbcType=BIGINT}
+        </if>
+    </select>
+
+    <select id="queryOrgTypePrivilege"  resultMap="orgPrivilegeListVOMap">
+        SELECT
+        0 AS reward_type_id,
+        b.reward_type_name,
+        a.id reward_org_type_id,
+        b.reward_value,
+        a.level,
+        a.type_name AS org_type_name
+        FROM sys_org_type a LEFT JOIN (
+            SELECT reward_type_id, reward_type_name, reward_org_type_id, reward_value
+            FROM biz_org_privilege
+            WHERE reward_type_id = 0 AND org_id = #{orgId, jdbcType=BIGINT}
+        ) b ON a.id = b.reward_org_type_id
+        WHERE a.del_flag = 0
+        <if test="level != null">
+            AND a.level >= #{level, jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <select id="querySoftwareTypePrivilege"  resultMap="orgPrivilegeListVOMap">
+        SELECT
+        1 AS reward_type_id,
+        b.reward_type_name,
+        a.id reward_software_type_id,
+        b.reward_value,
+        0 AS level,
+        a.type_name AS software_type_name
+        FROM biz_software_type a LEFT JOIN (
+            SELECT reward_type_id, reward_type_name, reward_software_type_id, reward_value
+            FROM biz_org_privilege
+            WHERE reward_type_id = 1 AND org_id = #{orgId, jdbcType=BIGINT}
+        ) b ON a.id = b.reward_software_type_id
+        WHERE a.del_flag = 0
+    </select>
+
+    <select id="queryOrgAllTypePrivilegeList" resultMap="orgAllTypePrivilegeMap">
+        SELECT
+        a.reward_type_id,
+        a.reward_type_name,
+        a.reward_org_type_id,
+        a.reward_software_type_id,
+        a.reward_value
+        FROM biz_org_privilege a
+        WHERE org_id = #{orgId, jdbcType=BIGINT}
+    </select>
+</mapper>

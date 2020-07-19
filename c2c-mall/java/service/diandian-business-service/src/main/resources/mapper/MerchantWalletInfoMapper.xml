@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantWalletInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.merchant.MerchantWalletInfoModel">
+        <result column="id" property="id"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="amount" property="amount"/>
+        <result column="margin_amount" property="marginAmount"/>
+        <result column="surplus_exchange_number" property="surplusExchangeNumber"/>
+        <result column="exchange_number" property="exchangeNumber"/>
+        <result column="amount_sum" property="amountSum"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <update id="updateAmount">
+        UPDATE merchant_wallet_info
+        SET amount = #{newAmount}
+        WHERE
+        merchant_id = #{merchantId} and amount = #{oldAmount}
+    </update>
+    <update id="updateMarginAmount">
+        UPDATE merchant_wallet_info
+        SET amount = #{newAmount},margin_amount = margin_amount + #{marginAmount}
+        WHERE
+        merchant_id = #{merchantId} and amount = #{oldAmount}
+    </update>
+</mapper>

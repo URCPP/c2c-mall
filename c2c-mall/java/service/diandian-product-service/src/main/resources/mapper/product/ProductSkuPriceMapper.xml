@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.product.mapper.ProductSkuPriceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.product.ProductSkuPriceModel">
+        <result column="id" property="id"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="software_type_id" property="softwareTypeId"/>
+        <result column="software_type_name" property="softwareTypeName"/>
+        <result column="exchange_integral" property="exchangeIntegral"/>
+        <result column="price" property="price"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="listBySkuId" resultType="com.diandian.dubbo.facade.model.product.ProductSkuPriceModel">
+        select * from product_sku_price where sku_id=#{skuId}
+    </select>
+
+</mapper>

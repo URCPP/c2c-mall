@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.BizNotifyInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.biz.BizNotifyInfoModel">
+        <result column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="state_flag" property="stateFlag"/>
+        <result column="type_flag" property="typeFlag"/>
+        <result column="new_flag" property="newFlag"/>
+        <result column="content" property="content"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <select id="listAround" parameterType="java.lang.Long" resultType="com.diandian.dubbo.facade.model.biz.BizNotifyInfoModel">
+        (SELECT * FROM `biz_notify_info` WHERE `id` &lt; #{id}
+        AND state_flag = 0
+        AND type_flag = 0
+        ORDER BY `id` DESC LIMIT 1)
+        UNION
+        (SELECT * FROM `biz_notify_info` WHERE `id` &gt;= #{id}
+        AND state_flag = 0
+        AND type_flag = 0
+        ORDER BY `id` ASC LIMIT 2)
+    </select>
+</mapper>

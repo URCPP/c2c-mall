@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.diandian.dubbo.business.mapper.transport.TransportFeeRuleAreaMapper">
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into transport_fee_rule_area (id, transport_rule_id, region_code) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id},
+            #{item.transportRuleId},
+            #{item.regionCode})
+        </foreach>
+    </insert>
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM transport_fee_rule_area
+        WHERE transport_rule_id = #{transportRuleId} AND region_code = #{regionCode}
+    </select>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantOpenOptLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.merchant.MerchantOpenOptLogModel">
+        <result column="id" property="id"/>
+        <result column="bill_no" property="billNo"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="recommend_id" property="recommendId"/>
+        <result column="merchant_login_name" property="merchantLoginName"/>
+        <result column="soft_type_id" property="softTypeId"/>
+        <result column="opt_type" property="optType"/>
+        <result column="opt_record" property="optRecord"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+</mapper>

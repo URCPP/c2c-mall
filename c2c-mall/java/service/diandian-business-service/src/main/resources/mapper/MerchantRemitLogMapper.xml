@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantRemitLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.merchant.MerchantRemitLogModel">
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="merchant_name" property="merchantName"/>
+        <result column="amount" property="amount"/>
+        <result column="proof_url" property="proofUrl"/>
+        <result column="audit_flag" property="auditFlag"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="merchantRemitLogVOMap" type="com.diandian.dubbo.facade.vo.merchant.MerchantRemitLogVO">
+        <id column="id" property="id"/>
+        <result column="name" property="merchantName"/>
+        <result column="code" property="merchantCode"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="amount" property="amount"/>
+        <result column="proof_url" property="proofUrl"/>
+        <result column="audit_flag" property="auditFlag"/>
+        <result column="create_time" property="createTime"/>
+        <result column="audit_time" property="auditTime"/>
+        <result column="audit_fail_reason" property="auditFailReason"/>
+        <result column="auditor" property="auditor"/>
+    </resultMap>
+
+    <select id="listPage" resultType="com.diandian.dubbo.facade.model.merchant.MerchantRemitLogModel">
+
+        select *
+        from merchant_remit_log
+        where 1=1 and audit_flag != 0
+        <if test="params.orderNo != null and params.orderNo != '' ">
+            and order_no =#{params.orderNo}
+        </if>
+
+        <if test="params.type != null and params.type != '' ">
+            and type =#{params.type}
+        </if>
+
+        <if test="params.auditFlag != null and params.auditFlag != '' ">
+            and audit_flag =#{params.auditFlag}
+        </if>
+
+        <if test="params.startTime != null and params.startTime != '' ">
+            and create_time >= #{params.startTime}
+        </if>
+
+        <if test="params.endTime != null and params.endTime != '' ">
+            and #{params.endTime} >= create_time
+        </if>
+        order by id desc
+    </select>
+
+    <select id="listMallOpenPage" resultMap="merchantRemitLogVOMap">
+        select
+        a.id,
+        a.merchant_id,
+        b.name,
+        b.code,
+        a.amount,
+        a.proof_url,
+        a.audit_flag,
+        a.create_time,
+        a.audit_time,
+        a.audit_fail_reason,
+        a.auditor
+        from merchant_remit_log a LEFT JOIN merchant_info b ON a.merchant_id = b.id
+        where a.audit_flag != 0 AND a.type = 1
+        <if test="params.merchantName != null and params.merchantName != '' ">
+            and b.name LIKE CONCAT('%', #{params.merchantName}, '%')
+        </if>
+        <if test="params.auditFlag != null and params.auditFlag.size() > 0 ">
+            and a.audit_flag IN
+            <foreach collection="params.auditFlag" item="item" index="index" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.startTime != null and params.startTime != '' ">
+            and a.create_time >= #{params.startTime}
+        </if>
+
+        <if test="params.endTime != null and params.endTime != '' ">
+            and #{params.endTime} >= a.create_time
+        </if>
+        order by a.id desc
+    </select>
+
+</mapper>

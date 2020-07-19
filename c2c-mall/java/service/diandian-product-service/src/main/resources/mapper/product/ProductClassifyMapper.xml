@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.product.mapper.ProductClassifyMapper">
+
+    <resultMap id="firstCategoryVOMap" type="com.diandian.dubbo.facade.vo.ProductCategoryVO">
+        <result column="id" property="categoryId"></result>
+        <result column="category_name" property="categoryName"></result>
+        <collection property="childIds" ofType="java.lang.Long">
+            <result column="child_id"></result>
+        </collection>
+    </resultMap>
+
+<!--    <resultMap id="apiCategoryListMap" type="com.diandian.dubbo.facade.dto.api.result.CategoryListResultDTO">-->
+<!--        <result column="id" property="categoryId"></result>-->
+<!--        <result column="parent_id" property="parentId"></result>-->
+<!--        <result column="category_name" property="categoryName"></result>-->
+<!--        <result column="image_url" property="imageUrl"></result>-->
+<!--    </resultMap>-->
+
+    <select id="list" resultType="com.diandian.dubbo.facade.model.product.ProductClassifyModel">
+        select a.*,b.category_name as parentCategoryName from product_classify a left join product_classify b on a.category_parent = b.id
+        where a.del_flag = 0
+        order by a.sort
+    </select>
+
+    <select id="getById" parameterType="long" resultType="com.diandian.dubbo.facade.model.product.ProductClassifyModel">
+        select a.*,b.category_name as parentCategoryName from product_classify a left join product_classify b on a.category_parent = b.id
+        where a.id = #{id}
+    </select>
+
+    <select id="listFirstCategory" resultMap="firstCategoryVOMap">
+        SELECT a.id, a.category_name, b.id child_id
+        FROM product_classify a LEFT JOIN product_classify b ON a.id = b.category_parent
+        WHERE a.del_flag = 0 AND b.del_flag = 0
+        ORDER BY a.sort ASC
+    </select>
+
+<!--    <select id="apiList" resultMap="apiCategoryListMap">-->
+<!--        SELECT-->
+<!--        id,-->
+<!--        category_parent,-->
+<!--        category_name,-->
+<!--        CONCAT(#{domain, jdbcType=VARCHAR}, image_url) image_url-->
+<!--        FROM product_classify-->
+<!--        WHERE 1 = 1-->
+<!--        <if test="dto.parentId != null">-->
+<!--            AND category_parent = #{dto.parentId, jdbcType=BIGINT}-->
+<!--        </if>-->
+<!--    </select>-->
+</mapper>

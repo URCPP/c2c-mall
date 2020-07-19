@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.admin.merchant.modules.biz.mapper.MerchantWithdrawApplyLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.admin.model.merchant.MerchantWithdrawApplyLogModel">
+        <result column="id" property="id"/>
+        <result column="bill_no" property="billNo"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="merchant_name" property="merchantName"/>
+        <result column="soft_type_id" property="softTypeId"/>
+        <result column="soft_type_name" property="softTypeName"/>
+        <result column="withdraw_fee" property="withdrawFee"/>
+        <result column="arrival_money" property="arrivalMoney"/>
+        <result column="withdraw_rate" property="withdrawRate"/>
+        <result column="audit_state" property="auditState"/>
+        <result column="audit_user_id" property="auditUserId"/>
+        <result column="audit_user_name" property="auditUserName"/>
+        <result column="audit_time" property="auditTime"/>
+        <result column="payment_user_id" property="paymentUserId"/>
+        <result column="payment_user_name" property="paymentUserName"/>
+        <result column="payment_time" property="paymentTime"/>
+        <result column="payment_bank_no" property="paymentBankNo"/>
+        <result column="apply_state" property="applyState"/>
+        <result column="fail_reason" property="failReason"/>
+        <result column="bank_card_no" property="bankCardNo"/>
+        <result column="bank_account_name" property="bankAccountName"/>
+        <result column="bank_name" property="bankName"/>
+        <result column="bank_branch_name" property="bankBranchName"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.diandian.admin.business.modules.sys.mapper.SysUserMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="userResultMap" type="com.diandian.admin.model.sys.SysUserModel">
+        <id column="uid" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="phone" property="phone"/>
+        <result column="avatar" property="avatar"/>
+        <result column="salt" property="salt"/>
+        <result column="type" property="type"/>
+        <result column="ustate" property="state"/>
+        <result column="org_id" property="orgId"/>
+        <result column="org_name" property="orgName"/>
+        <result column="org_type_id" property="orgTypeId"/>
+        <result column="type_name" property="orgTypeName"/>
+        <result column="ucreate_time" property="createTime"/>
+        <result column="uupdate_time" property="updateTime"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="level" property="level"/>
+        <result column="approve_flag" property="approveFlag"/>
+        <result column="tree_str" property="treeStr"/>
+    </resultMap>
+
+    <resultMap id="userFormMap" type="com.diandian.admin.business.modules.sys.vo.SysUserForm">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="type" property="type"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="avatar" property="avatar"/>
+        <result column="state" property="state"/>
+        <collection property="roleIdList" ofType="java.lang.Long">
+            <result column="role_id"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="listMap" type="com.diandian.admin.model.sys.SysUserModel">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="type" property="type"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="avatar" property="avatar"/>
+        <result column="state" property="state"/>
+        <result column="org_name" property="orgName"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+
+    <select id="getByUsername" resultType="com.diandian.admin.model.sys.SysUserModel">
+		select * from sys_user where username = #{username}
+	</select>
+
+
+    <select id="getById" resultMap="userResultMap">
+         SELECT
+            u.id AS uid,
+            u.username,
+            u.`password`,
+            u.salt,
+            u.phone,
+            u.avatar,
+            u.type,
+            u.org_id,
+            u.org_type_id,
+            u.state AS ustate,
+            u.create_time AS ucreate_time,
+            u.update_time AS uupdate_time,
+            u.del_flag AS udel_flag,
+            o.org_name,
+            o.approve_flag,
+            o.tree_str,
+            ot.type_name,
+            ot.level
+            FROM
+            sys_user AS u LEFT JOIN sys_org o ON u.org_id = o.id LEFT JOIN sys_org_type ot ON o.org_type_id = ot.id
+        WHERE
+           u.id = #{id}
+    </select>
+    <select id="listAllPermsByUserId" resultType="java.lang.String">
+        select m.perms from sys_user_role ur
+			LEFT JOIN sys_role_menu rm on ur.role_id = rm.role_id
+			LEFT JOIN sys_menu m on rm.menu_id = m.id
+		where ur.user_id = #{userId}
+    </select>
+
+    <select id="listAllMenuIdByUserId" resultType="long">
+		select distinct rm.menu_id from sys_user_role ur
+			LEFT JOIN sys_role_menu rm on ur.role_id = rm.role_id
+		where ur.user_id = #{userId}
+	</select>
+
+    <select id="getUserFormById" parameterType="java.lang.Long" resultMap="userFormMap">
+      SELECT a.id, a.username, a.type, a.org_id, a.email, a.phone, a.avatar, a.state, b.role_id
+      FROM sys_user a LEFT JOIN sys_user_role b ON a.id = b.user_id
+      WHERE a.id = #{id, jdbcType=BIGINT}
+    </select>
+
+    <select id="listPage" parameterType="java.util.Map" resultMap="listMap">
+        SELECT a.id, a.username, a.type, a.email, a.phone, a.avatar, a.state, a.create_time, b.org_name
+        FROM sys_user a LEFT JOIN sys_org b ON a.org_id = b.id
+        WHERE a.del_flag = 0
+        <if test="params.orgIsRoot != null and params.orgIsRoot == 1">
+            AND a.org_id > 0
+        </if>
+        <if test="params.orgId != null and params.orgId != ''">
+            AND a.org_id = #{params.orgId}
+        </if>
+        <if test="params.createUserId != null and params.createUserId != ''">
+            AND a.create_by = #{params.createUserId}
+        </if>
+        <if test="params.username != null and params.username != ''">
+            AND a.username LIKE CONCAT('%', #{params.username}, '%')
+        </if>
+    </select>
+
+    <select id="getUserIdListByOrgId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT id FROM sys_user WHERE del_flag = 0 AND org_id = #{orgId, jdbcType=BIGINT}
+    </select>
+
+    <select id="listPageMerchant" resultType="com.diandian.admin.model.sys.SysUserModel">
+        SELECT
+	a.*
+FROM
+	sys_user a
+	LEFT JOIN user_shop_role b ON b.user_id = a.id
+WHERE
+	b.shop_id = #{params.shopId}
+    </select>
+</mapper>

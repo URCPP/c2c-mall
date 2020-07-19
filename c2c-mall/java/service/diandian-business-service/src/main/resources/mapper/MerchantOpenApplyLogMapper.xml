@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantOpenApplyLogMapper">
+
+    <resultMap id="voResultMap" type="com.diandian.dubbo.facade.vo.merchant.MerchantOpenApplyLogListVO">
+        <result column="id" property="id"/>
+        <result column="bill_no" property="billNo"/>
+        <result column="name" property="merchantName"/>
+        <result column="type_name" property="softTypeName"/>
+        <result column="apply_state_flag" property="applyStateFlag"/>
+        <result column="type_flag" property="typeFlag"/>
+        <result column="apply_type" property="applyType"/>
+        <result column="leader" property="leader"/>
+        <result column="phone" property="phone"/>
+        <result column="login_name" property="loginName"/>
+        <result column="create_time" property="createTime"/>
+        <result column="audit_fail_reason" property="auditFailReason"/>
+        <result column="parent_phone" property="parentPhone"/>
+        <result column="parent_contact_name" property="parentContactName"/>
+        <result column="parent_name" property="parentName"/>
+        <result column="parent_type_name" property="parentTypeName"/>
+    </resultMap>
+
+    <resultMap id="detailVOResultMap" type="com.diandian.dubbo.facade.vo.merchant.MerchantOpenApplyLogDetailVO">
+        <result column="id" property="id"/>
+        <result column="bill_no" property="billNo"/>
+        <result column="apply_type" property="applyType"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="name" property="name"/>
+        <result column="soft_type_id" property="softTypeId"/>
+        <result column="type_name" property="softTypeName"/>
+        <result column="leader" property="leader"/>
+        <result column="phone" property="phone"/>
+        <result column="idcard" property="idcard"/>
+        <result column="idcard_positive_pic" property="idcardPositivePic"/>
+        <result column="idcard_reverse_pic" property="idcardReversePic"/>
+        <result column="business_license_pic" property="businessLicensePic"/>
+        <result column="business_license_code" property="businessLicenseCode"/>
+        <result column="info_is_personal" property="infoIsPersonal"/>
+        <result column="power_attorney_pic" property="powerAttorneyPic"/>
+        <result column="open_bank" property="openBank"/>
+        <result column="open_branch_bank" property="openBranchBank"/>
+        <result column="bank_card_no" property="bankCardNo"/>
+        <result column="bank_card_pic" property="bankCardPic"/>
+        <result column="account_name" property="accountName"/>
+        <result column="login_name" property="loginName"/>
+        <result column="province_code" property="provinceCode"/>
+        <result column="province_name" property="provinceName"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="city_name" property="cityName"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="area_name" property="areaName"/>
+        <result column="address" property="address"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="parent_type_flag" property="parentTypeFlag"/>
+        <result column="recommend_id" property="recommendId"/>
+        <result column="recommend_type_flag" property="recommendTypeFlag"/>
+        <result column="one_category_id" property="oneCategoryId"/>
+        <result column="one_category" property="oneCategory"/>
+        <result column="two_category_id" property="twoCategoryId"/>
+        <result column="two_category" property="twoCategory"/>
+        <result column="dining_start_time" property="diningStartTime"/>
+        <result column="dining_end_time" property="diningEndTime"/>
+        <result column="consume" property="consume"/>
+        <result column="apply_state_flag" property="applyStateFlag"/>
+        <result column="pic" property="paymentPic"/>
+    </resultMap>
+
+    <select id="softApplyInfoListPage" parameterType="com.diandian.dubbo.facade.dto.merchant.MerchantOpenApplyLogQueryDTO" resultMap="voResultMap">
+        SELECT a.id, a.bill_no, a.apply_state_flag, a.create_time, b.name, b.leader, b.phone, c.type_name, a.type_flag,a.apply_type,
+        b.login_name, a.audit_fail_reason, d.org_name parent_name, d.contact_name parent_contact_name, d.phone parent_phone, e.type_name parent_type_name
+        FROM merchant_open_apply_log a LEFT JOIN merchant_info b ON a.merchant_id = b.id
+        LEFT JOIN biz_software_type c ON a.soft_type_id = c.id LEFT JOIN biz_org_info d ON a.parent_id = d.org_id
+        LEFT JOIN  sys_org_type e ON d.org_type_id = e.id
+        WHERE 1 = 1
+        <if test="params.softTypeId != null and params.softTypeId != '0'">
+            AND a.soft_type_id = #{params.softTypeId}
+        </if>
+        <if test="params.name != null and params.name != ''">
+            AND b.name LIKE CONCAT('%', #{params.name} ,'%')
+        </if>
+        <if test="params.phone != null and params.phone != ''">
+            AND b.phone LIKE CONCAT('%', #{params.phone} ,'%')
+        </if>
+        <if test="params.billNo != null and params.billNo != ''">
+            AND a.bill_no LIKE CONCAT('%', #{params.billNo} ,'%')
+        </if>
+        <if test="params.parentId != null and params.parentId != ''">
+            AND b.tree_str LIKE CONCAT('%', #{params.parentId}, '%')
+        </if>
+        <if test="params.leader != null and params.leader != ''">
+            AND b.leader LIKE CONCAT('%', #{params.leader} ,'%')
+        </if>
+        <if test="params.loginName != null and params.loginName != ''">
+            AND b.login_name LIKE CONCAT('%', #{params.loginName} ,'%')
+        </if>
+        <if test="params.applyType != null">
+            AND a.apply_type = #{params.applyType}
+        </if>
+        <if test="params.auditState != null">
+            AND a.apply_state_flag = #{params.auditState}
+        </if>
+        ORDER BY a.id DESC
+    </select>
+    <select id="getMerchantApplyDetail" parameterType="com.diandian.dubbo.facade.dto.merchant.MerchantOpenApplyLogQueryDTO" resultMap="detailVOResultMap">
+        SELECT a.id, a.bill_no, a.apply_type, a.merchant_id, a.soft_type_id, b.name, b.leader, b.phone, b.idcard, b.idcard_positive_pic,b.idcard_reverse_pic, b.business_license_pic,
+        b.business_license_code,b.open_bank,b.open_branch_bank,b.bank_card_no,b.bank_card_pic,b.account_name,b.one_category_id, b.info_is_personal, b.power_attorney_pic,
+        b.one_category,b.two_category_id,b.two_category,b.dining_start_time,b.dining_end_time,b.province_name,b.province_code,b.city_name,b.city_code, b.area_name,
+        b.area_code, b.address,b.soft_type_id,b.recommend_type_flag,b.recommend_id,b.parent_type_flag,b.parent_id, b.login_name,b.consume,c.type_name,a.apply_state_flag, d.pic
+        FROM merchant_open_apply_log a LEFT JOIN merchant_info b ON a.merchant_id = b.id LEFT JOIN biz_software_type c ON a.soft_type_id = c.id
+        LEFT JOIN biz_payment_pic d ON a.id = d.apply_id
+        WHERE 1 = 1
+        <if test="dto.id != null and dto.id != 0">
+            AND a.id = #{dto.id, jdbcType=BIGINT}
+        </if>
+        <if test="dto.parentId != null and dto.parentId != '' and dto.parentId != 0">
+            AND b.tree_str LIKE CONCAT('%', #{dto.parentId, jdbcType=BIGINT}, '%')
+        </if>
+    </select>
+
+    <select id="count" parameterType="com.diandian.dubbo.facade.dto.merchant.MerchantOpenApplyLogQueryDTO" resultType="java.lang.Integer">
+        SELECT COUNT(a.id) FROM merchant_open_apply_log a LEFT JOIN merchant_info b ON a.merchant_id = b.id
+        WHERE 1 = 1
+        <if test="dto.treeStr != null and dto.treeStr != ''">
+            AND b.tree_str LIKE CONCAT('%', #{dto.treeStr}, '%')
+        </if>
+        <if test="dto.applyType != null">
+            AND a.apply_type = #{dto.applyType}
+        </if>
+        <if test="dto.auditState != null">
+            AND a.apply_state_flag = #{dto.auditState}
+        </if>
+        <if test="dto.startTime != null and dto.startTime != ''">
+            AND a.create_time >= #{dto.startTime}
+        </if>
+        <if test="dto.endTime != null and dto.endTime != ''">
+            AND #{dto.endTime} >= a.create_time
+        </if>
+    </select>
+</mapper>

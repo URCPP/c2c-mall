@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantOpenPlatformMapper">
+
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.merchant.MerchantOpenPlatformModel">
+        <id column="id" property="id" />
+        <result column="merchant_id" property="merchantId" />
+        <result column="app_id" property="appId" />
+        <result column="app_secret" property="appSecret" />
+        <result column="access_token" property="accessToken" />
+        <result column="token_expire_time" property="tokenExpireTime" />
+        <result column="white_ip" property="whiteIp" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <select id="apiGetToken" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        id,
+        merchant_id,
+        app_id,
+        app_secret,
+        access_token,
+        token_expire_time,
+        white_ip,
+        update_time,
+        create_time
+        FROM merchant_open_platform
+        WHERE app_id = #{appId, jdbcType=VARCHAR}
+    </select>
+
+    <select id="getMerchantIdByAppId" parameterType="java.lang.String" resultType="java.lang.Long">
+        SELECT merchant_id FROM merchant_open_platform WHERE app_id = #{appId, jdbcType=VARCHAR}
+    </select>
+
+    <select id="count" parameterType="com.diandian.dubbo.facade.model.merchant.MerchantOpenPlatformModel" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM merchant_open_platform
+        WHERE 1 = 1
+        <if test="appId != null and appId != ''">
+            AND app_id = #{appId, jdbcType=VARCHAR}
+        </if>
+        <if test="appSecret != null and appSecret != ''">
+            AND app_secret = #{appSecret, jdbcType=VARCHAR}
+        </if>
+        <if test="mchId != null">
+            AND merchant_id = #{mchId, jdbcType=VARCHAR}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantWalletHistoryLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.merchant.MerchantWalletHistoryLogModel">
+        <id column="id" property="id"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="merchant_name" property="merchantName"/>
+        <result column="type_flag" property="typeFlag"/>
+        <result column="pre_amount" property="preAmount"/>
+        <result column="amount" property="amount"/>
+        <result column="post_amount" property="postAmount"/>
+        <result column="opt_record" property="optRecord"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="listPage" resultType="com.diandian.dubbo.facade.model.merchant.MerchantWalletHistoryLogModel">
+
+        SELECT
+        *
+        FROM merchant_wallet_history_log
+        WHERE 1=1
+
+        <if test="params.merchantId != null and params.merchantId != '' ">
+            and merchant_id = #{params.merchantId}
+        </if>
+
+
+        <if test="params.keyword != null and params.keyword != '' ">
+            and member_account like CONCAT('%',#{params.keyword},'%')
+        </if>
+
+        <if test="params.startTime != null and params.startTime != '' ">
+            and DATE_FORMAT(create_time,'%Y-%m-%d') >= #{params.startTime}
+        </if>
+        <if test="params.endTime != null and params.endTime != '' ">
+            and #{params.endTime} >= DATE_FORMAT(create_time,'%Y-%m-%d')
+        </if>
+
+        ORDER BY id DESC
+
+    </select>
+
+    <select id="getMchRechargedAmount" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
+        SELECT SUM(amount) FROM merchant_wallet_history_log WHERE type_flag = 1 AND merchant_id = #{merchantId, jdbcType=BIGINT}
+    </select>
+
+</mapper>

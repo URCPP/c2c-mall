@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.diandian.dubbo.business.mapper.transport.TransportInfoMapper">
+    <resultMap id="transportMap" type="com.diandian.dubbo.facade.model.transport.TransportInfoModel">
+        <result property="id" column="id"/>
+        <result property="transportName" column="transport_name"/>
+        <result property="transportCompanyId" column="transport_company_id"/>
+        <result property="repositoryId" column="repository_id"/>
+        <result property="transportType" column="transport_type"/>
+        <result property="feeType" column="fee_type"/>
+        <result property="feeIntroduce" column="fee_introduce"/>
+        <result property="tips" column="tips"/>
+        <result property="transportCompanyName" column="transport_company_name"/>
+        <result property="repositoryName" column="repository_name"/>
+        <collection property="transportFeeRuleList" ofType="com.diandian.dubbo.facade.model.transport.TransportFeeRuleModel">
+            <result property="id" column="transport_fee_id"/>
+            <result property="transportId" column="transport_id"/>
+            <result property="firstValue" column="first_value"/>
+            <result property="firstFee" column="first_fee"/>
+            <result property="extValue" column="ext_value"/>
+            <result property="extFee" column="ext_fee"/>
+            <result property="insurance" column="insurance"/>
+            <collection property="transportFeeRuleAreaList" ofType="java.lang.Integer">
+                <result property="regionCode" column="region_code"/>
+            </collection>
+        </collection>
+    </resultMap>
+    <resultMap id="transportVOMap" type="com.diandian.dubbo.facade.vo.TransportInfoVO">
+        <result property="repositoryId" column="repository_id"/>
+        <result property="repositoryName" column="repository_name"/>
+        <result property="transportId" column="transport_id"/>
+        <result property="transportName" column="transport_name"/>
+        <result property="transportType" column="transport_type"/>
+        <result property="feeType" column="fee_type"/>
+        <result property="tips" column="tips"/>
+        <collection property="rules" column="transport_id" ofType="com.diandian.dubbo.facade.vo.TransportFeeRuleVO">
+            <result property="transportRuleId" column="transport_rule_id"/>
+            <result property="firstValue" column="first_value"/>
+            <result property="firstFee" column="first_fee"/>
+            <result property="extValue" column="ext_value"/>
+            <result property="extFee" column="ext_fee"/>
+            <result property="insurance" column="insurance"/>
+        </collection>
+    </resultMap>
+    <sql id="selectTransport">
+        SELECT
+	a.*,
+	b.id AS transport_fee_id,
+	b.transport_id,
+	b.first_value,
+	b.first_fee,
+	b.ext_value,
+	b.ext_fee,
+	b.insurance,
+	c.region_code,
+	d.repository_name,
+	e.transport_company_name
+FROM
+	transport_info a
+	LEFT JOIN transport_fee_rule b ON a.id = b.transport_id
+	LEFT JOIN transport_fee_rule_area c ON c.transport_rule_id = b.id
+	LEFT JOIN repository_info d ON d.id = a.repository_id
+	LEFT JOIN transport_company e ON e.id = a.transport_company_id
+WHERE
+	a.del_flag = 0
+	limit 0,2
+    </sql>
+    <select id="getById" resultMap="transportMap">
+        <include refid="selectTransport"></include>
+        <if test="id != null and id != ''">
+            AND a.id=#{id}
+        </if>
+    </select>
+
+    <select id="listDetail" resultMap="transportMap">
+        <include refid="selectTransport"></include>
+        <if test="transportIds!=null and transportIds.size()>0">
+            and a.id in
+            <foreach collection="transportIds" item="item" index="index" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getTransportVOList" resultMap="transportVOMap">
+        SELECT
+        a.repository_id,
+        c.repository_name,
+        a.id transport_id,
+        a.transport_type,
+        a.fee_type,
+        a.tips,
+        a.transport_name,
+        b.id transport_rule_id, b.first_fee, b.first_value, b.ext_value, b.ext_fee, b.insurance
+        FROM transport_info a LEFT JOIN transport_fee_rule b ON a.id = b.transport_id
+        LEFT JOIN repository_info c ON a.repository_id = c.id
+        WHERE a.del_flag = 0
+        <if test="typeIds != null and typeIds.size() > 0">
+            AND
+            <foreach collection="typeIds" item="item" index="index" separator="OR" open="(" close=")">
+                a.transport_type = #{item}
+            </foreach>
+        </if>
+        <if test="idsStr!=null and idsStr != ''">
+            AND LOCATE(a.id, #{idsStr}) > 0
+        </if>
+    </select>
+</mapper>

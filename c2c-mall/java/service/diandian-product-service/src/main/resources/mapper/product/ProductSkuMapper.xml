@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.product.mapper.ProductSkuMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.product.ProductSkuModel">
+        <result column="id" property="id"/>
+        <result column="product_id" property="productId"/>
+        <result column="shop_id" property="shopId"/>
+        <result column="sku_name" property="skuName"/>
+
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="del_flag" property="delFlag"/>
+        <collection property="stockList" column="id" ofType="com.diandian.dubbo.facade.model.product.ProductSkuStockModel" select="com.diandian.dubbo.product.mapper.ProductSkuStockMapper.listBySkuId" />
+    </resultMap>
+
+
+    <select id="listSkuPage" resultType="com.diandian.dubbo.facade.vo.SkuVO">
+          SELECT
+                a.id as skuId,
+                a.sku_name as skuName,
+
+                b.id as productId,
+                b.product_name as productName,
+                a.spec_name1 as specName1,
+                a.spec_value1 as specValue1,
+                a.del_flag as delFlag,
+                a.create_time as createTime,
+                a.update_time as updateTime,
+
+                c.id as categoryId,
+                c.category_name as categoryName,
+
+                b.introduce as introduce,
+                b.product_html as productHtml,
+                b.virtual_sale_volume as virtualSaleVolume,
+                b.sale_volume as saleVolume,
+                b.image_urls as imageUrls,
+                b.exchange_integral as exchangeIntegral,
+                b.price as price,
+                b.state as state,
+                b.recommend_flag as recommendFlag,
+                b.hot_flag as hotFlag,
+                b.new_flag as newFlag,
+                b.perfect_flag as perfectFlag,
+                b.min_buy_num as minBuyNum,
+                b.sort as sort,
+                b.service_rate as serviceRate,
+        b.transport_ids as getTransportIds
+        FROM product_sku a
+        LEFT JOIN product_info b ON a.product_id = b.id
+        LEFT JOIN product_category c ON b.category_id = c.id
+
+        WHERE 1=1
+
+        <if test="params.transportTypeId != null and params.transportTypeId.size() > 0">
+            and
+            <foreach collection="params.transportTypeId" item="item" index="index" separator="AND" open="(" close=")">
+                b.transport_ids != CONCAT(#{item})
+            </foreach>
+        </if>
+
+        <if test="params.skuName != null and params.skuName != '' ">
+            and a.sku_name like concat("%",#{params.skuName},"%")
+        </if>
+
+        <if test="params.delFlag != null ">
+            and b.del_flag = #{params.delFlag}
+        </if>
+
+        <if test="params.state != null">
+            and b.state = #{params.state}
+        </if>
+        <if test="params.skuId != null">
+            and a.id = #{params.skuId}
+        </if>
+
+        <if test="params.cIdList != null and params.cIdList.size() &gt; 0">
+            and b.category_id in
+            <foreach collection="params.cIdList" item="item"  open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="params.sortflag == 'asc1' ">
+            order by a.id asc
+        </if>
+
+        <if test="params.sortflag == 'desc1' ">
+            order by a.id desc
+        </if>
+
+        <if test="params.sortflag == 'asc2' ">
+            order by b.sale_volume asc
+        </if>
+
+        <if test="params.sortflag == 'desc2' ">
+            order by b.sale_volume desc
+        </if>
+
+        <if test="params.sortflag == 'asc3' ">
+            order by b.price asc
+        </if>
+
+        <if test="params.sortflag == 'desc3' ">
+            order by b.price desc
+        </if>
+
+
+
+    </select>
+
+
+
+    <select id="listByProductId" resultMap="BaseResultMap">
+        select * from product_sku where product_id=#{productId}
+    </select>
+
+    <select id="getSkuVOById" resultType="com.diandian.dubbo.facade.vo.SkuVO">
+        SELECT
+        a.id as skuId,
+        a.sku_name as skuName,
+        b.id as productId,
+        b.product_name as productName,
+        a.spec_name1 as specName1,
+        a.spec_value1 as specValue1,
+        a.spec_value2 as specValue2,
+        a.spec_value3 as specValue3,
+        a.del_flag as delFlag,
+        a.create_time as createTime,
+        a.update_time as updateTime,
+        c.id as categoryId,
+        c.category_name as categoryName,
+        b.introduce as introduce,
+        b.product_html as productHtml,
+        b.virtual_sale_volume as virtualSaleVolume,
+        b.sale_volume as saleVolume,
+        b.image_urls as imageUrls,
+        b.exchange_integral as exchangeIntegral,
+        b.price as price,
+        b.state as state,
+        b.recommend_flag as recommendFlag,
+        b.hot_flag as hotFlag,
+        b.new_flag as newFlag,
+        b.perfect_flag as perfectFlag,
+        b.min_buy_num as minBuyNum,
+        b.sort as sort,
+        b.service_rate as serviceRate,
+        b.transport_ids as getTransportIds,
+        b.shop_name as shopName,
+        b.weight,
+        b.volume
+        FROM product_sku a
+        LEFT JOIN product_info b ON a.product_id = b.id
+        LEFT JOIN product_category c ON b.category_id = c.id
+        WHERE 1=1
+        <if test="productId != null">
+            AND a.product_id = #{productId}
+        </if>
+        <if test="skuId != null">
+            AND a.id = #{skuId}
+        </if>
+    </select>
+
+    <select id="getSkuById" resultMap="BaseResultMap">
+        SELECT
+	    *
+        FROM
+	    product_sku a
+	    LEFT JOIN product_sku_price b ON b.sku_id = a.id
+        WHERE
+	    a.id = #{id}
+	    AND b.software_type_id = #{softwareId}
+    </select>
+
+    <select id="getByShopId" resultMap="BaseResultMap">
+        SELECT
+	    *
+        FROM
+	    product_sku a
+	    LEFT JOIN product_sku_price b ON b.sku_id = a.id
+	    where shop_id=#{shopId}
+    </select>
+
+</mapper>

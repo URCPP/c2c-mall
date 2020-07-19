@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.admin.business.modules.sys.mapper.SysRoleMapper">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.diandian.admin.model.sys.SysRoleModel" id="sysRoleMap">
+        <result property="id" column="id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="orgId" column="org_id"/>
+        <collection property="menuList" ofType="com.diandian.admin.model.sys.SysMenuModel">
+            <id column="mid" property="id"/>
+            <result column="menu_name" property="name"/>
+        </collection>
+    </resultMap>
+
+    <resultMap type="com.diandian.admin.model.sys.SysRoleModel" id="sysRoleVO">
+        <result property="id" column="id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="orgId" column="org_id"/>
+        <result property="orgName" column="org_name"/>
+    </resultMap>
+
+    <select id="getById" resultMap="sysRoleMap">
+		select r.id,r.role_name,r.remark,r.create_time,r.create_by, r.org_id,
+		 m.id as mid,m.name as menu_name from sys_role r left join sys_role_menu rm on r.id= rm.role_id left join sys_menu m on rm.menu_id = m.id
+		where r.id=#{roleId}
+	</select>
+
+    <!-- 查询用户创建的角色ID列表 -->
+    <select id="listRoleIdListByCreater" resultType="long">
+		select id from sys_role where create_by = #{createUserId}
+	</select>
+
+    <select id="list" resultMap="sysRoleVO">
+		SELECT a.id, a.role_name, a.remark, a.org_id, a.create_time, a.create_by, a.update_time, b.org_name
+		FROM sys_role a LEFT JOIN sys_org b ON a.org_id = b.id
+		WHERE 1 = 1
+		<if test="params.orgId != null and params.orgId != 0">
+            AND a.org_id = #{params.orgId}
+        </if>
+        <if test="params.createBy != null and params.createBy != 0">
+            AND a.create_by = #{params.createBy}
+        </if>
+	</select>
+
+    <select id="listPage" parameterType="java.util.Map" resultMap="sysRoleVO">
+        SELECT a.id, a.role_name, a.remark, a.org_id, a.create_time, a.create_by, a.update_time, b.org_name
+        FROM sys_role a LEFT JOIN sys_org b ON a.org_id = b.id
+        WHERE 1 = 1
+        <if test="params.orgIsRoot != null and params.orgIsRoot == 1">
+            AND a.org_id > 0
+        </if>
+        <if test="params.orgId != null and params.orgId != ''">
+            AND a.org_id = #{params.orgId}
+        </if>
+        <if test="params.createUserId != null and params.createUserId != ''">
+            AND a.create_by = #{params.createUserId}
+        </if>
+        <if test="params.roleName != null and params.roleName != ''">
+            AND a.role_name LIKE CONCAT('%', #{params.roleName}, '%')
+        </if>
+    </select>
+
+    <select id="getOrgIdListByRoleIdList" parameterType="java.util.List" resultType="java.lang.Long">
+        SELECT org_id FROM sys_role WHERE 1 = 1
+        <if test="roleIds != null and roleIds.size > 0">
+            AND id IN
+            <foreach collection="roleIds" open="(" close=")" separator="," item="roleId">
+                #{roleId}
+            </foreach>
+        </if>
+    </select>
+
+</mapper>

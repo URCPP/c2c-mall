@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantFreightSetMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.merchant.MerchantFreightSetModel">
+        <result column="id" property="id"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="freight_template_id" property="freightTemplateId"/>
+        <result column="freight_template" property="freightTemplate"/>
+        <result column="freight_code" property="freightCode"/>
+        <result column="freight_state_flag" property="freightStateFlag"/>
+        <result column="assume_flag" property="assumeFlag"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+</mapper>

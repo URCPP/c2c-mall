@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.SysOrgMapper">
+    <resultMap id="orgDetailVOMap" type="com.diandian.dubbo.facade.vo.OrgDetailVO">
+        <result property="orgId" column="id"/>
+        <result property="orgCode" column="org_code"/>
+        <result property="orgName" column="org_name"/>
+        <result property="orgTypeId" column="org_type_id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="parentName" column="parent_name"/>
+        <result property="contactName" column="contact_name"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="idcard" column="IDCard"/>
+        <result property="openBank" column="open_bank"/>
+        <result property="openBranchBank" column="open_branch_bank"/>
+        <result property="bankCardNo" column="bank_card_no"/>
+        <result property="bankCardPic" column="bank_card_pic"/>
+        <result property="accountName" column="account_name"/>
+        <result property="provinceCode" column="province_code"/>
+        <result property="cityCode" column="city_code"/>
+        <result property="areaCode" column="area_code"/>
+        <result property="address" column="address"/>
+        <result property="sort" column="sort"/>
+        <result property="idcardReversePic" column="IDCard_reverse_Pic"/>
+        <result property="idcardPositivePic" column="IDCard_positive_pic"/>
+        <result property="state" column="state"/>
+        <result property="businessLicenseCode" column="business_license_code"/>
+        <result property="businessLicensePic" column="business_license_pic"/>
+        <result property="approveFlag" column="approve_flag"/>
+        <result property="infoIsPersonal" column="info_is_personal"/>
+        <result property="powerAttorneyPic" column="power_attorney_pic"/>
+    </resultMap>
+    <resultMap id="orgListVOMap" type="com.diandian.dubbo.facade.vo.OrgListVO">
+        <result property="id" column="id"/>
+        <result property="orgCode" column="org_code"/>
+        <result property="orgName" column="org_name"/>
+        <result property="orgTypeName" column="type_name"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="parentName" column="parent_name"/>
+        <result property="contactName" column="contact_name"/>
+        <result property="phone" column="phone"/>
+        <result property="state" column="state"/>
+        <result property="createTime" column="create_time"/>
+        <result property="recommendName" column="recommend_name"/>
+        <result property="approveFlag" column="approve_flag"/>
+    </resultMap>
+    <resultMap id="IntactTreeItemVOMap" type="com.diandian.dubbo.facade.vo.IntactTreeVO">
+        <result property="id" column="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="name" column="name"/>
+        <result property="type" column="type"/>
+    </resultMap>
+
+    <resultMap id="mchSalesOverviewVOMap" type="com.diandian.dubbo.facade.vo.StatisticsMerchantSalesVO">
+        <result column="id" property="merchantId"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="code" property="code"/>
+        <result column="name" property="name"/>
+        <result column="create_time" property="createTime"/>
+        <result column="received_amount" property="receivedAmount"/>
+    </resultMap>
+
+    <select id="queryOrgListVO" parameterType="java.util.Map" resultMap="orgListVOMap">
+        SELECT a.id, d.org_code, a.org_name, c.type_name, a.parent_id, a.state, b.org_name parent_name, d.contact_name, d.phone,
+        a.approve_flag, a.create_time, e.org_name recommend_name
+        FROM sys_org a LEFT JOIN sys_org b ON a.parent_id = b.id LEFT JOIN sys_org_type c ON a.org_type_id = c.id
+        LEFT JOIN biz_org_info d ON a.id = d.org_id LEFT JOIN sys_org e ON d.recommend_id = e.id
+        WHERE a.del_flag = 0
+        <if test="params.orgTypeId != null and params.orgTypeId != '' and params.orgTypeId != 0">
+            AND a.org_type_id = #{params.orgTypeId}
+        </if>
+        <if test="params.orgName != null and params.orgName != ''">
+            AND a.org_name like concat('%',#{params.orgName},'%')
+        </if>
+        <if test="params.orgCode != null and params.orgCode != ''">
+            AND d.org_code like concat('%',#{params.orgCode},'%')
+        </if>
+        <if test="params.contactName != null and params.contactName != ''">
+            AND d.contact_name like concat('%',#{params.contactName},'%')
+        </if>
+        <if test="params.phone != null and params.phone != ''">
+            AND d.phone like concat('%',#{params.phone},'%')
+        </if>
+        <if test="params.parentId != null and params.orgId != '' and params.parentId != 0">
+            AND (a.id = #{params.parentId} OR a.tree_str LIKE CONCAT('%', #{params.parentId}, '%'))
+        </if>
+        <if test="params.state != null and params.state != ''">
+            AND a.state = #{params.state}
+        </if>
+        ORDER BY a.parent_id ASC, a.sort ASC
+    </select>
+    <select id="listPage" parameterType="java.util.Map" resultMap="orgListVOMap">
+        SELECT
+        a.id,
+        d.org_code,
+        a.org_name,
+        c.type_name,
+        a.parent_id,
+        a.state,
+        b.org_name parent_name,
+        d.contact_name,
+        d.phone,
+        a.approve_flag,
+        a.create_time,
+        e.org_name recommend_name
+        FROM sys_org a LEFT JOIN sys_org b ON a.parent_id = b.id LEFT JOIN sys_org_type c ON a.org_type_id = c.id
+        LEFT JOIN biz_org_info d ON a.id = d.org_id LEFT JOIN sys_org e ON d.recommend_id = e.id
+        WHERE a.del_flag = 0
+        <if test="params.orgTypeId != null and params.orgTypeId != '' and params.orgTypeId != 0">
+            AND a.org_type_id = #{params.orgTypeId}
+        </if>
+        <if test="params.orgName != null and params.orgName != ''">
+            AND a.org_name like concat('%',#{params.orgName},'%')
+        </if>
+        <if test="params.orgCode != null and params.orgCode != ''">
+            AND d.org_code like concat('%',#{params.orgCode},'%')
+        </if>
+        <if test="params.contactName != null and params.contactName != ''">
+            AND d.contact_name like concat('%',#{params.contactName},'%')
+        </if>
+        <if test="params.phone != null and params.phone != ''">
+            AND d.phone like concat('%',#{params.phone},'%')
+        </if>
+        <if test="params.parentId != null and params.orgId != '' and params.parentId != 0">
+            AND (a.id = #{params.parentId} OR a.tree_str LIKE CONCAT('%', #{params.parentId}, '%'))
+        </if>
+        <if test="params.recommendId != null and params.recommendId != ''">
+            AND d.recommend_id = #{params.recommendId}
+        </if>
+        <if test="params.state != null and params.state != ''">
+            AND a.state = #{params.state}
+        </if>
+        <if test="params.approveFlag != null and params.approveFlag != ''">
+            AND a.approve_flag = #{params.approveFlag}
+        </if>
+        <if test="params.state != null and params.state != ''">
+            AND a.state = #{params.state}
+        </if>
+        <if test="params.excludeList!=null and params.excludeList.size()>0">
+            AND a.id NOT IN
+            <foreach collection="params.excludeList" open="(" close=")" separator="," item="item">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.startTime != null and params.startTime != ''">
+            AND a.create_time >= #{params.startTime}
+        </if>
+        <if test="params.endTime != null and params.endTime != ''">
+            AND #{params.endTime} >= a.create_time
+        </if>
+        ORDER BY a.id DESC
+    </select>
+    <select id="getOrgDetailVO" parameterType="java.lang.Long" resultMap="orgDetailVOMap">
+        SELECT
+        a.id,
+        a.org_name,
+        a.parent_id,
+        a.org_type_id,
+        a.sort,
+        a.state,
+        b.org_name parent_name,
+        d.org_code,
+        d.province_code,
+        d.city_code,
+        d.area_code,
+        d.address,
+        d.contact_name,
+        d.phone,
+        a.approve_flag,
+        d.email,
+        d.IDCard,
+        d.IDCard_positive_pic,
+        d.IDCard_reverse_Pic,
+        d.business_license_pic,
+        d.business_license_code,
+        d.open_bank,
+        d.open_branch_bank,
+        d.bank_card_no,
+        d.bank_card_pic,
+        d.account_name,
+        d.info_is_personal,
+        d.power_attorney_pic
+        FROM sys_org a LEFT JOIN sys_org b ON a.parent_id = b.id LEFT JOIN sys_org_type c ON a.org_type_id = c.id
+        LEFT JOIN biz_org_info d ON a.id = d.org_id
+        WHERE a.del_flag = 0 AND a.id = #{id, jdbcType=BIGINT}
+    </select>
+
+    <select id="getIntactTreeOrgPart" parameterType="java.util.Map" resultMap="IntactTreeItemVOMap">
+        SELECT id, org_name name, parent_id, 0 AS type FROM sys_org
+        WHERE state = 0 AND del_flag = 0
+        <if test="params.parentId != null and params.parentId != '' and params.parentId != 0">
+            AND (id = #{params.parentId} OR tree_str LIKE CONCAT('%', #{params.parentId}, '%'))
+        </if>
+    </select>
+
+    <select id="getNameById" parameterType="java.lang.Long" resultType="java.lang.String">
+        SELECT org_name FROM sys_org WHERE id = #{id, jdbcType=BIGINT}
+    </select>
+
+    <select id="count" parameterType="com.diandian.dubbo.facade.dto.sys.OrgQueryDTO" resultType="java.lang.Integer">
+        SELECT COUNT(a.id) FROM sys_org a LEFT JOIN biz_org_info b ON a.id = b.org_id
+        WHERE a.del_flag = 0
+        <if test="dto.id != null">
+            AND a.id = #{dto.id}
+        </if>
+        <if test="dto.orgName != null and dto.orgName != ''">
+            AND a.org_name = #{dto.orgName}
+        </if>
+        <if test="dto.parentId != null">
+            AND a.parent_id = #{dto.parentId}
+        </if>
+        <if test="dto.openType != null">
+            AND b.open_type = #{dto.openType}
+        </if>
+        <if test="dto.treeStr != null and dto.treeStr != ''">
+            AND a.tree_str LIKE CONCAT('%', #{dto.treeStr}, '%')
+        </if>
+    </select>
+    <select id="selectNotDeleteOrgById" parameterType="java.lang.Long" resultType="com.diandian.dubbo.facade.model.sys.SysOrgModel">
+        SELECT * FROM sys_org WHERE del_flag = 0 AND id = #{id, jdbcType=BIGINT}
+    </select>
+
+    <select id="getExportOrgList" parameterType="java.util.Map" resultType="java.util.Map">
+        SELECT
+        a.org_code orgCode,
+        a.org_name orgName,
+        b.org_name parentOrgName,
+        c.org_name recommendOrgName,
+        d.type_name orgTypeName,
+        a.contact_name contactName,
+        a.phone,
+        a.idcard,
+        a.business_license_code businessLicenseCode,
+        a.open_bank openBank,
+        a.open_branch_bank openBranchBank,
+        a.bank_card_no bankCardNo,
+        a.account_name accountName,
+        a.province_name provinceName,
+        a.city_name cityName,
+        a.area_name areaName,
+        a.address,
+        a.create_time createTime
+        FROM sys_org e LEFT JOIN biz_org_info a ON e.id = a.org_id LEFT JOIN sys_org b ON a.parent_id = b.id
+        LEFT JOIN sys_org c ON a.recommend_id = c.id LEFT JOIN sys_org_type d ON a.org_type_id = d.id
+        WHERE a.del_flag = 0
+        <if test="params.orgTypeId != null and params.orgTypeId != '' and params.orgTypeId != 0">
+            AND e.org_type_id = #{params.orgTypeId}
+        </if>
+        <if test="params.approveFlag != null">
+            AND e.approve_flag = #{params.approveFlag}
+        </if>
+        <if test="params.state != null and params.state != ''">
+            AND e.state = #{params.state}
+        </if>
+        <if test="params.startTime != null and params.startTime != ''">
+            AND a.create_time >= #{params.startTime}
+        </if>
+        <if test="params.endTime != null and params.endTime != ''">
+            AND #{params.endTime} >= a.create_time
+        </if>
+        ORDER BY e.id
+    </select>
+
+    <select id="listMchPageByOrgId" parameterType="java.util.Map" resultMap="mchSalesOverviewVOMap">
+        SELECT b.id, b.parent_id, b.code, b.name, b.create_time, c.trade_amount received_amount
+        FROM (
+            SELECT org_id FROM biz_org_info WHERE 1 = 1
+            <if test="params.orgId != null and params.orgId != ''">
+              AND org_id = #{params.orgId}
+            </if>
+            <if test="params.recommendId != null and params.recommendId != ''">
+              AND recommend_id = #{params.recommendId}
+            </if>
+        ) a LEFT JOIN merchant_info b ON(LOCATE(a.org_id,b.tree_str) > 0)
+        LEFT JOIN (
+            SELECT from_org_id, SUM(trade_amount) trade_amount FROM biz_commission_detail
+            WHERE 1 = 1
+            <if test="params.type != null and params.type != ''">
+                AND bus_type = #{params.type}
+            </if>
+            <if test="params.orgId != null and params.orgId != ''">
+                AND org_id = #{params.orgId}
+            </if>
+            <if test="params.recommendId != null and params.recommendId != ''">
+                AND org_id = #{params.recommendId}
+            </if>
+            GROUP BY from_org_id
+        ) c ON b.id = c.from_org_id
+        WHERE b.del_flag = 0
+        <if test="params.name != null and params.name != ''">
+            b.name LIKE CONCAT('%', #{params.name}, '%')
+        </if>
+        <if test="params.code != null and params.code != ''">
+            b.code LIKE CONCAT('%', #{params.code}, '%')
+        </if>
+        AND b.id IS NOT NULL
+        GROUP BY b.id, b.code, b.name, b.create_time, c.trade_amount
+        ORDER BY b.id DESC
+    </select>
+
+    <select id="getRecommendIdListByOrgId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT org_id FROM biz_org_info WHERE recommend_id = #{orgId, jdbcType=BIGINT}
+    </select>
+</mapper>

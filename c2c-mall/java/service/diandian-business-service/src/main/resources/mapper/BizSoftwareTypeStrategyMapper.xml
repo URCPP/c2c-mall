@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.BizSoftwareTypeStrategyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.biz.BizSoftwareTypeStrategyModel">
+        <result column="id" property="id"/>
+        <result column="software_type_id" property="softwareTypeId"/>
+        <result column="strategy_type" property="strategyType"/>
+        <result column="reward_type" property="rewardType"/>
+        <result column="reward_software_type_id" property="rewardSoftwareTypeId"/>
+        <result column="reward_value" property="rewardValue"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <resultMap id="SoftWareStrategyMap" type="com.diandian.dubbo.facade.vo.SoftWareStrategyVO">
+        <result column="id" property="id"/>
+        <result column="type_name" property="typeName"/>
+        <result column="strategy_type" property="strategyType"/>
+        <result column="reward_value" property="rewardValue"/>
+        <result column="reward_type" property="rewardType"/>
+        <result column="reward_type_name" property="rewardTypeName"/>
+        <result column="state" property="state"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="listBizSoftwareTypeStrategyPage" parameterType="java.util.HashMap" resultMap="SoftWareStrategyMap">
+        SELECT t.id,t2.type_name,t.strategy_type,t.reward_value,t.reward_type,t.state,t.remark,t.create_time,t3.type_name as reward_type_name
+        FROM biz_software_type_strategy t
+        LEFT JOIN biz_software_type t2 ON t.software_type_id = t2.id
+        LEFT JOIN biz_software_type t3 ON  t.reward_software_type_id = t3.id
+        WHERE 1 = 1
+        <if test="params.state !=null and params.state != ''">
+            and t.state = #{params.state}
+        </if>
+        <if test="params.softwareTypeId !=null and params.softwareTypeId!=''">
+            and t.software_type_id = #{params.softwareTypeId}
+        </if>
+    </select>
+
+</mapper>

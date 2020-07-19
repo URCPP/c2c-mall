@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.admin.business.modules.sys.mapper.SysAreaMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.admin.model.sys.SysAreaModel">
+        <result column="id" property="id"/>
+        <result column="areaCode" property="areacode"/>
+        <result column="areaName" property="areaname"/>
+        <result column="areaLevel" property="arealevel"/>
+        <result column="cityCode" property="citycode"/>
+        <result column="center" property="center"/>
+        <result column="parentId" property="parentid"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.member.MemberInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.member.MemberInfoModel">
+        <result column="id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_by" property="createBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="type" property="type"/>
+        <result column="state" property="state"/>
+        <result column="nice_name" property="niceName"/>
+        <result column="code" property="code"/>
+        <result column="account_no" property="accountNo"/>
+        <result column="login_password" property="loginPassword"/>
+        <result column="salt" property="salt"/>
+        <result column="avatar" property="avatar"/>
+        <result column="phone" property="phone"/>
+    </resultMap>
+
+    <select id="listPage" resultType="com.diandian.dubbo.facade.vo.MemberInfoVO">
+
+        SELECT
+            b.*,
+            a.merchant_id,
+            a.merchant_login_name,
+            a.avail_balance,
+            a.freeze_balance,
+            a.exchange_coupon_num,
+            a.exchange_coupon_sum,
+            a.shopping_coupon_amount,
+            a.shopping_coupon_sum,
+            a.consume_times_sum
+
+        FROM member_merchant_relation a
+        LEFT JOIN member_info b ON a.member_id = b.id
+
+        WHERE 1=1 and b.account_no is NOT NULL
+        <if test="params.merchantId != null and params.merchantId != '' ">
+            AND a.merchant_id = #{params.merchantId}
+        </if>
+
+        <if test="params.memberType != null and params.memberType != '' ">
+            AND b.type = #{params.memberType}
+        </if>
+
+        <if test="params.keyword != null and params.keyword != '' ">
+            AND b.account_no like CONCAT('%',#{params.keyword},'%')
+        </if>
+
+        ORDER BY a.id DESC
+
+
+    </select>
+
+</mapper>

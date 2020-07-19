@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.product.mapper.OrderInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.order.OrderInfoModel">
+        <result column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="order_amount" property="orderAmount"/>
+        <result column="actual_amount" property="actualAmount"/>
+        <result column="addprice" property="addPrice"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="merchant_name" property="merchantName"/>
+        <result column="merchant_software_type_id" property="merchantSoftwareTypeId"/>
+        <result column="merchant_software_type_name" property="merchantSoftwareTypeName"/>
+        <result column="order_type" property="orderType"/>
+        <result column="freight_bearer" property="freightBearer"/>
+        <result column="pay_state" property="payState"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <collection property="detailList" column="order_no"
+                    ofType="com.diandian.dubbo.facade.model.order.OrderDetailModel" select="listDetail"/>
+    </resultMap>
+
+    <resultMap id="mchSalesOverviewVOMap" type="com.diandian.dubbo.facade.vo.StatisticsMerchantSalesVO">
+        <result column="trade_num" property="tradeNum"/>
+        <result column="trade_amount" property="tradeAmount"/>
+    </resultMap>
+
+    <resultMap id="statisticsByDayVOMap" type="com.diandian.dubbo.facade.vo.StatisticsByDayVO">
+        <result column="date" property="date"/>
+        <result column="amount" property="amount"/>
+    </resultMap>
+
+    <resultMap id="statisticsSalesOverviewVOMap" type="com.diandian.dubbo.facade.vo.StatisticsSalesOverviewVO">
+        <result column="trade_num" property="tradeNum"/>
+        <result column="trade_amount" property="tradeAmount"/>
+        <result column="direct_trade_amount" property="directTradeAmount"/>
+        <result column="service_fee" property="serviceFee"/>
+        <result column="transport_fee" property="transportFee"/>
+    </resultMap>
+
+    <resultMap id="apiOrderDetailMap" type="com.diandian.dubbo.facade.dto.api.result.OrderDetailResultDTO">
+        <result column="order_no" property="orderNo"/>
+        <result column="mch_order_no" property="mchOrderNo"/>
+        <result column="create_time" property="createTime"/>
+        <collection property="orderProducts" ofType="com.diandian.dubbo.facade.dto.api.result.OrderDetailResultDTO$ApiOrderProductDetailResult">
+            <result column="mch_product_id" property="productId"/>
+            <result column="state" property="orderStatus"/>
+            <result column="transport_company_name" property="transportCompany"/>
+            <result column="transport_name" property="transportName"/>
+            <result column="transport_no" property="transportNo"/>
+            <result column="transmit_time" property="deliveryTime"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="apiIntegralOrderAmountMap" type="com.diandian.dubbo.facade.dto.api.result.MchIntegralOrderAmountResultDTO">
+        <result column="freight_bearer" property="freightBearer"/>
+        <result column="price" property="price"/>
+        <result column="num" property="num"/>
+        <result column="service_fee" property="serviceFee"/>
+        <result column="transport_fee" property="transportFee"/>
+    </resultMap>
+
+    <select id="listPage" resultMap="BaseResultMap">
+        select a.*
+        from order_info a
+        LEFT JOIN order_detail b ON a.order_no = b.order_no
+        where 1=1
+        <if test="params.shopId!=null and params.shopId!=''">
+            and b.shop_id=#{params.shopId}
+        </if>
+        <if test="params.orderNo!=null and params.orderNo!=''">
+            and a.order_no like concat('%',#{params.orderNo},'%')
+        </if>
+        <if test="params.orderType!=null">
+            and a.order_type = #{params.orderType}
+        </if>
+        <if test="params.recvName!=null and params.recvName != ''">
+            and b.recv_name LIKE CONCAT('%', #{params.recvName}, '%')
+        </if>
+        <if test="params.recvPhone!=null and params.recvPhone != ''">
+            and b.recv_phone LIKE CONCAT('%', #{params.recvPhone}, '%')
+        </if>
+        <if test="params.skuName!=null and params.skuName != ''">
+            and b.sku_name LIKE CONCAT('%', #{params.skuName}, '%')
+        </if>
+        <if test="params.createStartTime!=null and params.createStartTime!='' and params.createEndTime!=null and params.createEndTime!=''">
+            and a.create_time between #{params.createStartTime} and #{params.createEndTime}
+        </if>
+        GROUP BY a.id
+        ORDER BY a.id DESC
+    </select>
+
+    <select id="listDetail" resultType="com.diandian.dubbo.facade.model.order.OrderDetailModel">
+        select * from order_detail where order_no = #{orderNo}
+    </select>
+
+
+    <select id="countOrder" parameterType="java.util.Map"
+            resultType="com.diandian.dubbo.facade.vo.merchant.MerchantPurchaseOrderVO">
+        SELECT
+        COUNT(a.id) AS allNum,
+        IFNULL(SUM(CASE WHEN a.state = 0 THEN 1 ELSE 0 END),0) AS obligationNum,
+        IFNULL(SUM(CASE WHEN a.state = 1 THEN 1 ELSE 0 END),0) AS overhangNum,
+        IFNULL(SUM(CASE WHEN a.state = 2 THEN 1 ELSE 0 END),0) AS shipmentsNum,
+        IFNULL(SUM(CASE WHEN a.state = 3 THEN 1 ELSE 0 END),0) AS finishNum,
+        IFNULL(SUM(CASE WHEN a.state = 98 THEN 1 ELSE 0 END),0) AS cancelNum
+
+        FROM order_detail a
+        LEFT JOIN order_info b ON a.order_no = b.order_no
+        WHERE 1=1
+        <if test="merchantId != null">
+            and b.merchant_id = #{merchantId}
+        </if>
+        <if test="memberId != null">
+            and b.member_id = #{memberId}
+        </if>
+        <if test="merchantSoftTypeId != null">
+            and b.merchant_software_type_id = #{merchantSoftTypeId}
+        </if>
+
+        <if test="orderType !=null ">
+            and b.order_type = #{orderType}
+        </if>
+
+        <if test="afterSaleFlag !=null">
+            and a.after_sale_flag = #{afterSaleFlag}
+        </if>
+
+    </select>
+
+    <select id="listOrderVOPage" parameterType="java.util.Map" resultType="com.diandian.dubbo.facade.vo.order.OrderVO">
+        SELECT
+        a.*,
+        (ifnull(a.price,0) * ifnull(a.num,0) + ifnull(a.service_fee,0) + ifnull(transport_fee,0)) as totalPrice,
+        b.order_amount,
+        b.actual_amount,
+        a.shop_id,
+        a.shop_name,
+        b.merchant_id,
+        b.merchant_name,
+        b.merchant_software_type_id,
+        b.merchant_software_type_name,
+        b.order_type
+
+        FROM order_detail a
+        LEFT JOIN order_info b ON a.order_no = b.order_no
+        WHERE 1=1
+        <if test="params.merchantId != null">
+            and b.merchant_id = #{params.merchantId}
+        </if>
+        <if test="params.merchantSoftTypeId != null">
+            and b.merchant_software_type_id = #{params.merchantSoftTypeId}
+        </if>
+
+        <if test="params.orderType !=null ">
+            and b.order_type = #{params.orderType}
+        </if>
+
+        <if test="params.orderState !=null and params.orderState!= '' ">
+            and a.state = #{params.orderState}
+        </if>
+
+        <if test="params.afterSaleFlag !=null">
+            and a.after_sale_flag = #{params.afterSaleFlag}
+        </if>
+        order by a.id desc
+
+    </select>
+
+
+    <select id="listOrderPage" parameterType="java.util.Map"
+            resultType="com.diandian.dubbo.facade.model.order.OrderInfoModel">
+        SELECT *
+        from (SELECT
+        a.*,
+        GROUP_CONCAT(b.state) orderState,
+        b.shop_id
+        FROM order_info a
+        INNER JOIN order_detail b ON a.order_no = b.order_no
+
+        where 1=1
+
+        GROUP BY a.id
+
+        order by a.id desc)c
+
+        WHERE 1=1
+        <if test="params.shopId !=null">
+            and c.shop_id=#{params.shopId}
+        </if>
+        <if test="params.merchantId != null">
+            and c.merchant_id = #{params.merchantId}
+        </if>
+        <if test="params.merchantSoftTypeId != null">
+            and c.merchant_software_type_id = #{params.merchantSoftTypeId}
+        </if>
+
+
+        <if test="params.memberId != null">
+            and c.member_id = #{params.memberId}
+        </if>
+
+        <if test="params.orderType !=null ">
+            and c.order_type = #{params.orderType}
+        </if>
+
+        <if test="params.orderState !=null and params.orderState!= '' ">
+            and FIND_IN_SET(#{params.orderState},c.orderState)
+        </if>
+
+        <!-- <if test="params.afterSaleFlag !=null">
+             and b.after_sale_flag = #{params.afterSaleFlag}
+         </if>-->
+
+    </select>
+
+    <select id="listExchangeOrderPage" resultType="com.diandian.dubbo.facade.vo.order.OrderExchangeVO">
+        SELECT
+        i.order_no,
+        i.order_amount,
+        i.actual_amount,
+        i.order_type,
+        i.merchant_id,
+        i.update_time,
+        i.member_id,
+        i.create_time,
+        d.id,
+        d.sku_id,
+        d.sku_name,
+        d.product_image_url,
+        d.repository_id,
+        d.repository_name,
+        d.price,
+        d.num,
+        d.after_sale_flag,
+        d.service_fee,
+        d.recv_name,
+        d.recv_phone,
+        d.recv_address,
+        d.recv_post_code,
+        d.transport_no,
+        d.transport_fee,
+        d.transport_id,
+        d.transport_name,
+        d.transport_company_id,
+        d.transport_company_name,
+        d.share_flag,
+        d.state
+        FROM
+        order_info AS i ,
+        order_detail AS d
+        WHERE i.order_no = d.order_no and (order_type = 1 or order_type = 2)
+        <if test="params.merchantId != null">
+            and i.merchant_id = #{params.merchantId}
+        </if>
+        <if test="params.memberId != null">
+            and i.member_id = #{params.memberId}
+        </if>
+        <if test="params.recvName != null and params.recvName != ''">
+            and d.recv_name like concat("%",#{params.recvName},"%")
+        </if>
+
+        <if test="params.skuName !=null and params.skuName != '' ">
+            and d.sku_name like concat("%",#{params.skuName},"%")
+        </if>
+
+        <if test="params.recvPhone !=null and params.recvPhone != ''">
+            and d.recv_phone like concat("%",#{params.recvPhone},"%")
+        </if>
+
+        <if test="params.state !=null and params.state != ''">
+            and d.state = #{params.state}
+        </if>
+
+        <if test="params.startTime != null and params.startTime != '' ">
+            and DATE_FORMAT(i.create_time,'%Y-%m-%d') >= #{params.startTime}
+        </if>
+
+        <if test="params.endTime != null and params.endTime != '' ">
+            and #{params.endTime} >= DATE_FORMAT(i.create_time,'%Y-%m-%d')
+        </if>
+
+        order by i.id desc
+
+    </select>
+
+    <select id="getExchangeOrderInfo" resultType="com.diandian.dubbo.facade.vo.order.OrderExchangeVO">
+        SELECT
+        i.order_no,
+        i.order_amount,
+        i.actual_amount,
+        i.addprice,
+        i.order_type,
+        i.merchant_id,
+        i.update_time,
+        i.create_time,
+        d.id,
+        d.sku_id,
+        d.sku_name,
+        d.product_image_url,
+        d.repository_id,
+        d.repository_name,
+        d.price,
+        d.num,
+        d.after_sale_flag,
+        d.service_fee,
+        d.recv_name,
+        d.recv_phone,
+        d.recv_address,
+        d.recv_post_code,
+        d.transport_no,
+        d.transport_fee,
+        d.transport_id,
+        d.transport_name,
+        d.transport_company_id,
+        d.transport_company_name,
+        d.share_flag,
+        d.state,
+        d.pay_time,
+        d.transmit_time,
+        d.confirm_recv_time,
+        d.complete_time,
+        d.shop_name
+        FROM
+        order_info AS i ,
+        order_detail AS d
+        WHERE i.order_no = d.order_no
+        <if test="params.merchantId != null">
+            and i.merchant_id = #{params.merchantId}
+        </if>
+        <if test="params.detailId != null and params.detailId != ''">
+            and d.id = #{params.detailId}
+        </if>
+
+    </select>
+
+    <select id="getExchangeOrderWeek" resultType="com.diandian.dubbo.facade.model.order.OrderInfoModel">
+        SELECT
+        i.id,
+        i.order_no,
+        i.order_amount,
+        i.actual_amount,
+        i.addprice,
+        i.merchant_id,
+        i.merchant_name,
+        i.merchant_software_type_id,
+        i.merchant_software_type_name,
+        i.order_type,
+        i.pay_state,
+        i.remark,
+        i.create_time,
+        i.update_time
+        FROM
+        order_info AS i
+        WHERE 1=1
+        AND
+        YEARWEEK( date_format( create_time,'%Y-%m-%d' ) ) = YEARWEEK( now() )
+        <if test="params.merchantId != null">
+            AND i.merchant_id = #{params.merchantId}
+        </if>
+    </select>
+
+    <select id="listMchSalesByMchIds" parameterType="java.util.ArrayList" resultMap="mchSalesOverviewVOMap">
+        SELECT a.merchant_id, count(DISTINCT a.id) trade_num, SUM(b.price*b.num) AS trade_amount
+        FROM order_info a LEFT JOIN order_detail b ON a.order_no = b.order_no
+        WHERE a.pay_state = 1
+        <if test="ids != null and ids.size() > 0">
+            AND a.merchant_id IN
+            <foreach collection="ids" item="item"  open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND a.create_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND #{endTime} >= a.create_time
+        </if>
+        GROUP BY a.merchant_id
+        ORDER BY a.merchant_id DESC
+    </select>
+
+    <select id="getMchSalesOverview" parameterType="java.util.Map" resultMap="statisticsSalesOverviewVOMap">
+        SELECT count(DISTINCT a.id) trade_num, SUM(b.price*b.num) AS trade_amount,
+        <if test="params.orgIdStr != null and params.orgIdStr != ''">
+            SUM(IF(a.tree_str = #{params.orgIdStr}, b.price*b.num, 0)) AS direct_trade_amount,
+        </if>
+        SUM(b.service_fee) service_fee, SUM(b.transport_fee) transport_fee
+        FROM order_info a LEFT JOIN order_detail b ON a.order_no = b.order_no
+        WHERE a.pay_state = 1
+        <if test="params.orgIds != null and params.orgIds.size() > 0">
+            AND
+            <foreach collection="params.orgIds" item="item"  open="(" separator="OR" close=")">
+                LOCATE(#{item},a.tree_str) > 0
+            </foreach>
+        </if>
+        <if test="params.startTime != null and params.startTime != ''">
+            AND a.create_time >= #{params.startTime}
+        </if>
+        <if test="params.endTime != null and params.endTime != ''">
+            AND #{params.endTime} >= a.create_time
+        </if>
+    </select>
+
+    <select id="statisticsDailySalesAmount" parameterType="com.diandian.dubbo.facade.dto.order.OrderInfoQueryDTO" resultMap="statisticsByDayVOMap">
+        SELECT DATE_FORMAT(a.create_time,'%Y-%m-%d') date, SUM(b.price * b.num) amount FROM order_info a LEFT JOIN order_detail b ON a.order_no = b.order_no
+        WHERE a.pay_state = 1
+        <if test="dto.startTime != null and dto.startTime != ''">
+            AND a.create_time >= #{dto.startTime}
+        </if>
+        <if test="dto.endTime != null and dto.endTime != ''">
+            AND #{dto.endTime} >= a.create_time
+        </if>
+        GROUP BY DATE_FORMAT(a.create_time,'%Y-%m-%d')
+    </select>
+
+    <select id="apiCountByMchOrderNo" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM order_info WHERE merchant_id = #{mchId, jdbcType=BIGINT} AND mch_order_no = #{mchOrderNo, jdbcType=VARCHAR}
+    </select>
+
+    <select id="apiGetByMchOrderNo" parameterType="java.lang.String" resultMap="apiOrderDetailMap">
+        SELECT
+        a.order_no,
+        a.mch_order_no,
+        a.create_time,
+        b.mch_product_id,
+        b.state,
+        b.transport_company_name,
+        b.transport_name,
+        b.transport_no,
+        b.transmit_time
+        FROM order_info a LEFT JOIN order_detail b ON a.order_no = b.order_no
+        LEFT JOIN (
+            SELECT b.order_detail_id, b.transport_no FROM (
+                SELECT Max(id) id FROM order_detail_transport GROUP BY order_detail_id
+            ) a LEFT JOIN order_detail_transport b ON a.id = b.id
+        ) c ON b.id = c.order_detail_id
+        WHERE mch_order_no = #{mchOrderNo, jdbcType=VARCHAR}
+    </select>
+
+    <select id="apiGetIntegralOrderAmountByMch" parameterType="java.lang.Long" resultMap="apiIntegralOrderAmountMap">
+        SELECT
+        a.freight_bearer,
+        b.price,
+        b.num,
+        b.service_fee,
+        b.transport_fee
+        FROM order_info a LEFT JOIN order_detail b ON a.order_no = b.order_no
+        WHERE a.merchant_id = #{merchantId, jdbcType=BIGINT} AND (a.order_type = 1 OR a.order_type = 2) AND b.state = 0
+    </select>
+
+    <select id="selectByOrderNoDistinct" resultType="java.lang.Long">
+        select distinct info.merchant_id from order_info info inner JOIN order_detail detail ON
+        info.order_no = detail.order_no WHERE detail.order_no = #{orderNo};
+    </select>
+</mapper>

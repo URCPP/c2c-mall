@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.member.MemberOrderOptLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.member.MemberOrderOptLogModel">
+        <result column="id" property="id"/>
+        <result column="bill_no" property="billNo"/>
+        <result column="bill_type_flag" property="billTypeFlag"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="merchant_name" property="merchantName"/>
+        <result column="member_id" property="memberId"/>
+        <result column="member_account" property="memberAccount"/>
+        <result column="opt_record" property="optRecord"/>
+        <result column="opt_state_flag" property="optStateFlag"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+    <!--财务记录 -->
+    <select id="listPage" resultType="com.diandian.dubbo.facade.model.member.MemberOrderOptLogModel">
+        SELECT
+        o.id,
+        o.order_no,
+        o.order_type_flag,
+        o.merchant_id,
+        o.merchant_name,
+        o.member_id,
+        o.member_account,
+        o.exchange_coupon_num,
+        o.assume_freight_flag,
+        o.opt_record,
+        o.opt_state_flag,
+        o.create_time,
+        o.update_time,
+        o.remark
+        FROM
+        member_order_opt_log AS o
+        WHERE  1=1
+        <if test="params.merchantId != null and params.merchantId != '' ">
+            and  merchant_id = #{params.merchantId}
+        </if>
+        <if test="params.billNo != null and params.billNo != '' ">
+            and  order_no = #{params.billNo}
+        </if>
+        <if test="params.memberAccount != null and params.memberAccount != '' ">
+            and  member_account = #{params.memberAccount}
+        </if>
+        <if test="params.billTypeFlag != null and params.billTypeFlag != '' ">
+            and  order_type_flag = #{params.billTypeFlag}
+        </if>
+        <if test="params.startTime != null and params.startTime != '' ">
+            and DATE_FORMAT(update_time,'%Y-%m-%d') &gt;= #{params.startTime}
+        </if>
+        <if test="params.endTime != null and params.endTime != '' ">
+            and DATE_FORMAT(update_time,'%Y-%m-%d') &lt;= #{params.endTime}
+        </if>
+        ORDER BY
+        o.id DESC
+    </select>
+
+</mapper>

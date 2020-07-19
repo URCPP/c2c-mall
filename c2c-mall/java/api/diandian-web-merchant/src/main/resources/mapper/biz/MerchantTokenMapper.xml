@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.admin.merchant.modules.biz.mapper.MerchantTokenMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.member.MerchantTokenModel">
+        <result column="id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="token" property="token"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="expire_time" property="expireTime"/>
+        <result column="last_login_time" property="lastLoginTime"/>
+    </resultMap>
+
+</mapper>

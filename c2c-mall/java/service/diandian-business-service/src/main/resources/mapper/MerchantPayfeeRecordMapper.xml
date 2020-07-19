@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantPayfeeRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.merchant.MerchantPayfeeRecordModel">
+        <result column="id" property="id"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="pay_no" property="payNo"/>
+        <result column="pay_type" property="payType"/>
+        <result column="trade_order_no" property="tradeOrderNo"/>
+        <result column="trade_amount" property="tradeAmount"/>
+        <result column="trade_way" property="tradeWay"/>
+        <result column="state" property="state"/>
+        <result column="trade_time" property="tradeTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="statisticsByDayVOMap" type="com.diandian.dubbo.facade.vo.StatisticsByDayVO">
+        <result column="date" property="date"/>
+        <result column="amount" property="amount"/>
+    </resultMap>
+
+    <resultMap id="merchantPayFeeRecordVOMap" type="com.diandian.dubbo.facade.vo.merchant.MerchantPayfeeRecordVO">
+        <result column="id" property="id"/>
+        <result column="code" property="merchantCode"/>
+        <result column="name" property="merchantName"/>
+        <result column="pay_no" property="payNo"/>
+        <result column="pay_type" property="payType"/>
+        <result column="trade_amount" property="tradeAmount"/>
+        <result column="trade_way" property="tradeWay"/>
+        <result column="state" property="state"/>
+        <result column="trade_time" property="tradeTime"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="statisticsByDayVO" parameterType="com.diandian.dubbo.facade.dto.merchant.MerchantPayFeeRecordQueryDTO" resultMap="statisticsByDayVOMap">
+        SELECT DATE_FORMAT(create_time,'%Y-%m-%d') date, SUM(trade_amount) amount FROM merchant_payfee_record
+        WHERE state = 1
+        <if test="dto.payType != null">
+            AND pay_type = #{dto.payType}
+        </if>
+        <if test="dto.merchantIdList != null and dto.merchantIdList.size() > 0">
+            AND merchant_id IN
+            <foreach collection="dto.merchantIdList" index="index" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="dto.startTime != null and dto.startTime != ''">
+            AND create_time >= #{dto.startTime}
+        </if>
+        <if test="dto.endTime != null and dto.endTime != ''">
+            AND #{dto.endTime} >= create_time
+        </if>
+        GROUP BY DATE_FORMAT(create_time,'%Y-%m-%d')
+    </select>
+
+    <select id="statisticsTotalFee" resultType="java.util.Map">
+        SELECT SUM(IF(pay_type = 0, trade_amount, 0)) rechargeTotalFee, SUM(IF(pay_type = 1, trade_amount, 0)) renewalTotalFee FROM merchant_payfee_record
+        WHERE state = 1
+    </select>
+
+    <select id="listForPage" parameterType="com.diandian.dubbo.facade.dto.merchant.MerchantPayFeeRecordQueryDTO" resultMap="merchantPayFeeRecordVOMap">
+        SELECT
+        a.id,
+        b.name,
+        b.code,
+        a.pay_no,
+        a.pay_type,
+        a.trade_amount,
+        a.trade_way,
+        a.state,
+        a.trade_time,
+        a.create_time
+        FROM merchant_payfee_record a LEFT JOIN merchant_info b ON a.merchant_id = b.id
+        WHERE a.state = 1
+        <if test="dto.payType != null">
+            AND a.pay_type = #{dto.payType}
+        </if>
+        <if test="dto.merchantName != null and dto.merchantName != ''">
+            AND b.name LIKE CONCAT('%', #{dto.merchantName}, '%')
+        </if>
+        <if test="dto.merchantCode != null and dto.merchantCode != ''">
+            AND b.code LIKE CONCAT('%', #{dto.merchantCode}, '%')
+        </if>
+        <if test="dto.startTime != null and dto.startTime != ''">
+            AND a.create_time >= #{dto.startTime}
+        </if>
+        <if test="dto.endTime != null and dto.endTime != ''">
+            AND #{dto.endTime} >= a.create_time
+        </if>
+    </select>
+
+</mapper>

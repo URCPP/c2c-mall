@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.member.MemberExchangeHistoryLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.member.MemberExchangeHistoryLogModel">
+        <result column="id" property="id"/>
+        <result column="bill_no" property="billNo"/>
+        <result column="type_flag" property="typeFlag"/>
+        <result column="bill_type_flag" property="billTypeFlag"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="merchant_account" property="merchantAccount"/>
+        <result column="member_id" property="memberId"/>
+        <result column="exchange_number" property="exchangeNumber"/>
+        <result column="before_number" property="beforeNumber"/>
+        <result column="after_number" property="afterNumber"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+    <select id="getExchangeHistoryNum" parameterType="java.util.Map" resultType="com.diandian.dubbo.facade.dto.member.MemberExchangeHistoryLogDTO">
+        SELECT
+        IFNULL(SUM(IF(h.bill_type_flag = 0 ,exchange_number ,0 )),0) giveOutTotalSum,
+        IFNULL(SUM(IF(h.bill_type_flag = 2 ,exchange_number ,0 )),0) consumeTotalSum
+        FROM
+        member_exchange_history_log AS h
+
+        WHERE 1=1
+        <if test="merchantId != null">
+            and h.merchant_id = #{merchantId}
+        </if>
+
+        <if test="date != null and date != '' ">
+            and DATE_FORMAT(h.create_time,'%Y-%m-%d') = #{date}
+        </if>
+
+        <if test="month != null and month != '' ">
+            and DATE_FORMAT(h.create_time,'%Y-%m') = #{month}
+        </if>
+        <if test="year != null and year != '' ">
+            and DATE_FORMAT(h.create_time,'%Y') = #{year}
+        </if>
+
+
+    </select>
+
+    <select id="listMemberInfo" parameterType="java.util.Map"
+            resultType="com.diandian.dubbo.facade.model.member.MemberExchangeHistoryLogModel">
+        SELECT
+        member_id
+        FROM member_exchange_history_log
+        WHERE 1=1
+        <if test="merchantId != null">
+            and merchant_id = #{merchantId}
+        </if>
+
+        <if test="date != null and date != '' ">
+            and DATE_FORMAT(create_time,'%Y-%m-%d') = #{date}
+        </if>
+
+        <if test="month != null and month != '' ">
+            and DATE_FORMAT(create_time,'%Y-%m') = #{month}
+        </if>
+        <if test="year != null and year != '' ">
+            and DATE_FORMAT(create_time,'%Y') = #{year}
+        </if>
+
+        group by member_id
+
+
+    </select>
+</mapper>

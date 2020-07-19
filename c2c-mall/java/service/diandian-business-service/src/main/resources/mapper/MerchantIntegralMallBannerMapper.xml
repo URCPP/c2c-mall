@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantIntegralMallBannerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.merchant.MerchantIntegralMallBannerModel">
+        <id column="id" property="id" />
+        <result column="merchant_id" property="merchantId" />
+        <result column="banner_url" property="bannerUrl" />
+        <result column="link_url" property="linkUrl" />
+        <result column="state" property="state" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <resultMap id="apiListResultMap" type="com.diandian.dubbo.facade.dto.api.result.MchIntegralMallBannerListResultDTO">
+        <result column="banner_url" property="imageUrl" />
+        <result column="link_url" property="linkUrl" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, merchant_id, banner_url, link_url, state, create_time, update_time
+    </sql>
+
+    <select id="apiGetList" resultType="java.lang.String">
+        SELECT
+        CONCAT(#{domain, jdbcType=VARCHAR}, banner_url) banner_url,
+        link_url
+        FROM merchant_integral_mall_banner
+        WHERE merchant_id = #{mchId, jdbcType=BIGINT}
+    </select>
+</mapper>

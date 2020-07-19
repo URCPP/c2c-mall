@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.BizOrgTypeStrategyMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.biz.BizOrgTypeStrategyModel">
+        <result column="id" property="id"/>
+        <result column="org_type_id" property="orgTypeId"/>
+        <result column="strategy_type" property="strategyType"/>
+        <result column="strategy_type_name" property="strategyTypeName"/>
+        <result column="recommend_type" property="recommendType"/>
+        <result column="recommend_type_name" property="recommendTypeName"/>
+        <result column="reward_type" property="rewardType"/>
+        <result column="reward_type_name" property="rewardTypeName"/>
+        <result column="reward_org_type_id" property="rewardOrgTypeId"/>
+        <result column="reward_software_type_id" property="rewardSoftwareTypeId"/>
+        <result column="reward_value" property="rewardValue"/>
+        <result column="state" property="state"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+</mapper>

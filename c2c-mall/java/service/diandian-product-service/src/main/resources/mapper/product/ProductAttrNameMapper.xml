@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.product.mapper.ProductAttrNameMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.product.ProductAttrNameModel">
+        <result column="id" property="id"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="attr_name" property="attrName"/>
+        <result column="sort" property="sort"/>
+        <result column="sku_flag" property="skuFlag"/>
+        <result column="del_flag" property="delFlag"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="category_name" property="categoryName"/>
+    </resultMap>
+
+    <select id="listPage" resultMap="BaseResultMap">
+        select a.* ,b.category_name from product_attr_name a left join product_category b on a.category_id = b.id
+        where a.del_flag = 0
+        <if test="params.keyword!=null and params.keyword!=''">
+            and a.attr_name like concat('%',#{params.keyword},'%')
+        </if>
+    </select>
+
+    <select id="getById" resultMap="BaseResultMap">
+        select a.* ,b.category_name from product_attr_name a left join product_category b on a.category_id = b.id
+        where a.id = #{id}
+    </select>
+</mapper>

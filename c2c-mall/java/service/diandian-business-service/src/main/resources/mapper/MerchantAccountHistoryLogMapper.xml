@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.merchant.MerchantAccountHistoryLogMapper">
+
+    <select id="getFreezeBalanceByDate" resultType="com.diandian.dubbo.facade.model.merchant.MerchantAccountHistoryLogModel">
+        SELECT
+	*
+FROM
+	merchant_account_history_log
+WHERE
+	transaction_mode = 2
+	AND transaction_type = 2
+	AND business_type=9
+	AND merchant_id =#{merchantId}
+	AND DATE_FORMAT(create_time,'%Y-%m')=DATE_FORMAT(NOW(),'%Y-%m')
+    </select>
+
+    <select id="listPage" resultType="com.diandian.dubbo.facade.model.merchant.MerchantAccountHistoryLogModel">
+		SELECT
+	*
+FROM
+	merchant_account_history_log
+WHERE
+	merchant_id =#{params.merchantId}
+	<if test="params.createTime!=null">
+		DATE_FORMAT(create_time,'%Y-%m')=DATE_FORMAT(#{params.createTime},'%Y-%m')
+	</if>
+	<if test="params.businessType!=null and params.businessType!=''">
+		business_type=#{params.businessType}
+	</if>
+	<if test="params.transactionMode!=null and params.transactionMode!=''">
+		transaction_mode=#{params.transactionMode}
+	</if>
+		<if test="params.smallAmount!=null and params.smallAmount!=''">
+			transaction_amount>#{params.smallAmount}
+		</if>
+		<if test="params.bigAmount!=null and params.bigAmount!=''">
+			transaction_amount<![CDATA[ <= ]]>#{params.bigAmount}
+		</if>
+	</select>
+
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.OrderDetailMapper">
+
+    <!--<select id="getProfitByShopId" resultType="java.util.HashMap">
+        SELECT
+	SUM( price * num ) 'profit',
+	create_time 'createTime'
+    FROM
+	order_detail
+    WHERE
+	DATE_FORMAT( create_time, "%Y-%m-%d" )= DATE_FORMAT( #{date}, "%Y-%m-%d" )
+	AND shop_id=#{shopId}
+    GROUP BY
+	DATE_FORMAT( create_time, "%Y-%m-%d" )
+    </select>-->
+</mapper>

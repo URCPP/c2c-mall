@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.BizMallHelpMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.biz.BizMallHelpModel">
+        <result column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="title" property="title"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="content" property="content"/>
+        <result column="is_show" property="isShow"/>
+        <result column="sort_num" property="sortNum"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="parentName" property="parentName"/>
+    </resultMap>
+    <select id="listHelpPage" parameterType="java.util.HashMap" resultMap="BaseResultMap">
+        SELECT t.*,t2.title as parentName  FROM biz_mall_help t
+        LEFT JOIN biz_mall_help t2 ON t.parent_id = t2.id
+        WHERE 1=1
+        <if test="params.title != null and params.title !=''">
+            and t.title like CONCAT('%',#{params.title},'%')
+        </if>
+        <if test="params.type != null and params.type !=''">
+            and t.type = #{params.type}
+        </if>
+        <if test="params.parentId != null and params.parentId !=''">
+            and t.parent_id = #{params.parentId}
+        </if>
+    </select>
+</mapper>

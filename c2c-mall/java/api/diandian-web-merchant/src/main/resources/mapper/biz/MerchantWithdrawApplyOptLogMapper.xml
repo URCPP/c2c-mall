@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.admin.merchant.modules.biz.mapper.MerchantWithdrawApplyOptLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.admin.model.merchant.MerchantWithdrawApplyOptLogModel">
+        <result column="id" property="id"/>
+        <result column="bill_no" property="billNo"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="merchant_name" property="merchantName"/>
+        <result column="amount" property="amount"/>
+        <result column="apply_state" property="applyState"/>
+        <result column="opt_record" property="optRecord"/>
+        <result column="opt_type" property="optType"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <select id="listPage" resultType="com.diandian.admin.model.merchant.MerchantWithdrawApplyOptLogModel">
+
+        SELECT
+        w.id,
+        w.bill_no,
+        w.merchant_id,
+        w.merchant_name,
+        w.amount,
+        w.apply_state,
+        w.opt_record,
+        w.opt_type,
+        w.create_time,
+        w.update_time,
+        w.remark
+        FROM
+        merchant_withdraw_apply_opt_log AS w
+        WHERE 1=1
+
+        <if test="params.merchantId != null and params.merchantId != '' ">
+            and w.merchant_id = #{params.merchantId}
+        </if>
+
+        <if test="params.startTime != null and params.startTime != '' ">
+            and DATE_FORMAT(w.create_time,'%Y-%m-%d') &gt;= #{params.startTime}
+        </if>
+        <if test="params.endTime != null and params.endTime != '' ">
+            and  #{params.endTime} &gt;= DATE_FORMAT(w.create_time,'%Y-%m-%d')
+        </if>
+
+        ORDER BY id DESC
+
+    </select>
+</mapper>

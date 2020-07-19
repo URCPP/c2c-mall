@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.diandian.dubbo.business.mapper.material.MaterialDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.material.MaterialDetailModel">
+        <result column="id" property="id"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="product_id" property="productId"/>
+        <result column="product_name" property="productName"/>
+        <result column="image_urls" property="imageUrls"/>
+        <result column="price" property="price"/>
+        <result column="news" property="news"/>
+        <result column="me" property="me"/>
+        <result column="material_type_id" property="materialTypeId"/>
+        <result column="user_name" property="userName"/>
+        <result column="avatar" property="avatar"/>
+        <result column="share_content" property="shareContent"/>
+        <result column="material_img" property="materialImg"/>
+        <result column="comment" property="comment"/>
+        <result column="attention_flag" property="attentionFlag"/>
+        <result column="collect_state" property="collectState"/>
+        <result column="like_num" property="likeNum"/>
+        <result column="pageview" property="pageview"/>
+        <result column="share_num" property="shareNum"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="Result" type="com.diandian.dubbo.facade.model.material.res.MaterialDetailRes">
+        <result column="id" property="id"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="merchant_name" property="merchantName"/>
+        <result column="product_id" property="productId"/>
+        <result column="material_type_id" property="materialTypeId"/>
+        <result column="share_content" property="shareContent"/>
+        <result column="material_img" property="materialImg"/>
+        <result column="comment" property="comment"/>
+        <result column="attention_flag" property="attentionFlag"/>
+        <result column="collect_state" property="collectState"/>
+        <result column="like_num" property="likeNum"/>
+        <result column="pageview" property="pageview"/>
+        <result column="share_num" property="shareNum"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="product_name" property="productName"/>
+        <result column="price" property="price"/>
+        <result column="cover_map" property="coverMap"/>
+    </resultMap>
+
+    <select id="findList" resultMap="Result">
+    SELECT
+	a.*,
+	d.product_name 'product_name',
+	f.price 'price',
+	b.name 'merchant_name', b.avatar 'avatar',
+	d.cover_map 'cover_map'
+    FROM
+	material_detail a
+	LEFT JOIN merchant_info b ON a.merchant_id = b.id
+	LEFT JOIN ${productMapper}.product_info d ON d.id = a.product_id
+	LEFT JOIN ${productMapper}.product_sku e ON e.product_id = d.id
+	LEFT JOIN ${productMapper}.product_sku_price f ON f.sku_id = e.id
+	AND f.software_type_id = #{softwareTypeId}
+	WHERE  a.merchant_id=#{merchantId}
+    </select>
+
+    <select id="findProductId" resultType="com.diandian.dubbo.facade.model.material.MaterialDetailModel">
+        select b.name as userName,b.avatar,a.* from material_detail a left join merchant_info b on a.merchant_id=b.id
+        where a.product_id=#{params.productId} and a.share_num>0
+        <if test="params.typeId==3 ">
+            and a.merchant_id=#{params.merchantId}
+        </if>
+        order by
+        <if test="params.typeId==2 ">
+            a.share_num desc,
+        </if>
+        <if test="params.typeId==1 ">
+            a.create_time desc,
+        </if>
+        a.id
+    </select>
+
+    <!--<select id="findMyCollect" resultMap="Result">
+            SELECT
+	a.*,
+	d.product_name 'product_name',
+	f.price 'price',
+	c.name 'merchant_name',
+	d.cover_map 'cover_map'
+FROM
+        ${businessMapper}.material_detail a
+	LEFT JOIN ${businessMapper}.merchant_collect b ON b.material_id = a.id
+	LEFT JOIN ${businessMapper}.merchant_info c ON c.id = a.merchant_id
+	LEFT JOIN ${productMapper}.product_info d ON d.id = a.product_id
+	LEFT JOIN ${productMapper}.product_sku e ON e.product_id = d.id
+	LEFT JOIN ${productMapper}.product_sku_price f ON f.sku_id = e.id
+	AND f.software_type_id = #{softwareTypeId}
+WHERE
+	a.merchant_id = #{merchantId}
+        AND a.collect_state =#{collectState}
+    ORDER BY create_time DESC
+    </select>-->
+
+    <select id="CountNews" resultType="java.lang.Integer">
+           select count(*) as news from material_detail where TO_DAYS(create_time)=TO_DAYS(NOW()) and product_id=#{productId} and share_num>0
+    </select>
+
+    <select id="CountMe" resultType="java.lang.Integer">
+           select count(*) as me from material_detail
+           where product_id=#{productId} and merchant_id=#{merchantId} and share_num>0
+    </select>
+
+    <select id="findMyCollect" resultMap="Result">
+    SELECT
+	b.*,
+	d.product_name 'product_name',
+	f.price 'price',
+	c.name 'merchant_name', c.avatar 'avatar',
+	d.cover_map 'cover_map'
+    FROM
+	merchant_collect a
+	RIGHT JOIN ${businessMapper}.material_detail b ON a.material_id = b.id
+	LEFT JOIN ${businessMapper}.merchant_info c ON b.merchant_id = c.id
+	LEFT JOIN ${productMapper}.product_info d ON d.id = b.product_id
+	LEFT JOIN ${productMapper}.product_sku e ON e.product_id = d.id
+	LEFT JOIN ${productMapper}.product_sku_price f ON f.sku_id = e.id
+	AND f.software_type_id = #{softwareTypeId}
+	WHERE a.merchant_id=#{merchantId}
+    </select>
+
+</mapper>

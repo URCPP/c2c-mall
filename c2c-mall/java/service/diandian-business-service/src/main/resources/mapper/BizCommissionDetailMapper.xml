@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.BizCommissionDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.biz.BizCommissionDetailModel">
+        <result column="id" property="id"/>
+        <result column="order_detail_id" property="orderDetailId"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="trade_no" property="tradeNo"/>
+        <result column="trade_type" property="tradeType"/>
+        <result column="bus_type" property="busType"/>
+        <result column="trade_amount" property="tradeAmount"/>
+        <result column="trade_start" property="tradeStart"/>
+        <result column="trade_end" property="tradeEnd"/>
+        <result column="org_id" property="orgId"/>
+        <result column="from_org_id" property="fromOrgId"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="orgAccountStatementVOMap" type="com.diandian.dubbo.facade.vo.OrgAccountStatementVO">
+        <result column="date" property="date"/>
+        <result column="account_type" property="accountType"/>
+        <result column="income_cnt" property="incomeCnt"/>
+        <result column="income_amount" property="incomeAmount"/>
+        <result column="expenditure_cnt" property="expenditureCnt"/>
+        <result column="expenditure_amount" property="expenditureAmount"/>
+    </resultMap>
+
+    <resultMap id="commissionDetailVOListMap" type="com.diandian.dubbo.facade.vo.OrgAccountDetailVO">
+        <result column="trade_no" property="tradeNo"/>
+        <result column="account_type" property="accountType"/>
+        <result column="bus_type" property="busType"/>
+        <result column="trade_type" property="tradeType"/>
+        <result column="trade_amount" property="tradeAmount"/>
+        <result column="create_time" property="createTime"/>
+        <result column="org_name" property="orgName"/>
+        <result column="trade_start" property="tradeStart"/>
+        <result column="trade_end" property="tradeEnd"/>
+        <result column="from_org_name" property="fromOrgName"/>
+        <result column="from_mch_name" property="fromMchName"/>
+    </resultMap>
+
+    <resultMap id="statisticsSalesOverviewVOMap" type="com.diandian.dubbo.facade.vo.StatisticsSalesOverviewVO">
+        <result column="direct_team_amount" property="directTeamAmount"/>
+        <result column="other_team_amount" property="otherTeamAmount"/>
+        <result column="refund_amount" property="refundAmount"/>
+        <result column="settled_amount" property="settledAmount"/>
+    </resultMap>
+
+    <select id="statisticsEveryDay" parameterType="com.diandian.dubbo.facade.dto.biz.OrgAccountQueryDTO"
+            resultMap="orgAccountStatementVOMap">
+        SELECT
+        DATE_FORMAT(create_time, #{query.unit.label, jdbcType=VARCHAR}) date,
+        3 AS account_type,
+        COUNT(IF(trade_type = 0,id,null)) income_cnt,
+        SUM(IF(trade_type = 0,trade_amount,0)) income_amount,
+        COUNT(IF(trade_type = 1,id,null)) expenditure_cnt,
+        SUM(IF(trade_type = 1,trade_amount,0)) expenditure_amount
+        FROM biz_commission_detail
+        WHERE 1 = 1
+        <if test="query.orgId != null and query.orgId != 0">
+            AND org_id = #{query.orgId, jdbcType=BIGINT}
+        </if>
+        <if test="query.startTime != null and query.startTime != ''">
+            AND create_time >= #{query.startTime}
+        </if>
+        <if test="query.endTime != null and query.endTime != ''">
+            AND #{query.endTime} >= create_time
+        </if>
+        GROUP BY date
+    </select>
+
+    <select id="orgCommissionDetailListPage" parameterType="com.diandian.dubbo.facade.dto.biz.OrgAccountQueryDTO"
+            resultMap="commissionDetailVOListMap">
+        SELECT a.trade_no, 3 AS account_type, b.org_name, a.bus_type, a.trade_type, a.trade_amount,
+        a.trade_start, a.trade_end, c.org_name from_org_name, d.name from_mch_name, a.create_time
+        FROM biz_commission_detail a
+        LEFT JOIN sys_org b ON a.org_id = b.id
+        LEFT JOIN sys_org c ON a.from_org_id = c.id
+        LEFT JOIN merchant_info d ON a.from_org_id = d.id
+        WHERE 1 = 1
+        <if test="query.orgId != null and query.orgId != 0">
+            AND a.org_id = #{query.orgId}
+        </if>
+        <if test="query.tradeType != null">
+            AND a.trade_type = #{query.tradeType}
+        </if>
+        <if test="query.busType != null">
+            AND a.bus_type = #{query.busType}
+        </if>
+        <if test="query.startTime != null and query.startTime != ''">
+            AND a.create_time >= #{query.startTime}
+        </if>
+        <if test="query.endTime != null and query.endTime != ''">
+            AND #{query.endTime} >= a.create_time
+        </if>
+        ORDER BY a.id DESC
+    </select>
+
+    <select id="statisticsTotalAmount" parameterType="java.util.Map" resultMap="statisticsSalesOverviewVOMap">
+        SELECT
+        SUM(IF((bus_type = 0), trade_amount, 0)) direct_team_amount,
+        SUM(IF((bus_type = 1), trade_amount, 0)) other_team_amount,
+        SUM(IF((bus_type = 3), trade_amount, 0)) settled_amount,
+        SUM(IF((bus_type = 2), trade_amount, 0)) refund_amount
+        FROM biz_commission_detail
+        WHERE 1 = 1
+        <if test="params.orgId != null">
+            AND org_id = #{params.orgId}
+        </if>
+        <if test="params.startTime != null and params.startTime != ''">
+            AND create_time >= #{params.startTime}
+        </if>
+        <if test="params.endTime != null and params.endTime != ''">
+            AND #{params.endTime} >= create_time
+        </if>
+    </select>
+</mapper>

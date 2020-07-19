@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.diandian.dubbo.business.mapper.member.MemberExchangeLogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.diandian.dubbo.facade.model.member.MemberExchangeLogModel">
+        <id column="id" property="id"/>
+        <result column="bill_no" property="billNo"/>
+        <result column="type_flag" property="typeFlag"/>
+        <result column="state_flag" property="stateFlag"/>
+        <result column="merchant_id" property="merchantId"/>
+        <result column="merchant_name" property="merchantName"/>
+        <result column="member_id" property="memberId"/>
+        <result column="member_account" property="memberAccount"/>
+        <result column="member_nick_name" property="memberNickName"/>
+        <result column="member_balance" property="memberBalance"/>
+        <result column="amount" property="amount"/>
+        <result column="exchang_coupon_quota" property="exchangCouponQuota"/>
+        <result column="shopping_coupon_quota" property="shoppingCouponQuota"/>
+        <result column="before_exchange" property="beforeExchange"/>
+        <result column="before_shopping" property="beforeShopping"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <!-- 商户下的会员兑换记录 -->
+    <select id="listPage" resultType="com.diandian.dubbo.facade.model.member.MemberExchangeLogModel">
+        SELECT *
+        FROM member_exchange_log
+        WHERE  1=1
+        <if test="params.merchantId != null and params.merchantId != '' ">
+              and  merchant_id = #{params.merchantId}
+        </if>
+
+        order by id desc
+
+    </select>
+
+</mapper>
