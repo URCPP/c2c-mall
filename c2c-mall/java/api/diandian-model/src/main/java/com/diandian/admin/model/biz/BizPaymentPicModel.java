@@ -18,7 +18,7 @@ public class BizPaymentPicModel extends BaseModel {
 
 	private static final long serialVersionUID = 1L;
 
-
+//	是的
  
  	/**
 	 * 打款类型( 0开通机构打款， 1提现打款)
